@@ -20,9 +20,17 @@ Usage: %s -i [TARGET IP OR/IP LIST] [OPTIONS]
 
 Options:
   -h, --help                 show this help message and exit
+  -v, --version              show version of script and exit
   -i, --target-ip IP/FILE    target ip or/ targets ip file (e.g: IP:PORT) for attack
-  -p, --target-port PORT     target port for attack
-  -d, --dictionary-attack    set cracking method to dictionary attack
+  -p, --target-port PORT     target port for attack (Default: 22)
+  -C, --combolist            combolist file for attack
+  -U, --username             target username or/ username list file for attack
+  -P, --password             target password or/ password list file for attack
+  -d, --dictionary-attack    set cracking method to dictionary attack (Default)
   -b, --bruteforce-attack    set cracking method to bruteforce attack
-
+  -l, --bruteforce-length    length of bruteforce strings (Default: 8)
+  -t, --threads              amount of threads (Default: 10)
+  -T, --timeout              timeout of connections (Default: 2)
+  -O, --output               output file name
+  -V, --verbose              real-time showing results
     """ % (sys.argv[0])
