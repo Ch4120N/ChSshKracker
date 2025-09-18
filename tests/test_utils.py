@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from chsshkracker.utils.time_utils import format_duration
-from chsshkracker.utils.files import read_items
+from ChSSHKracker.utils.time_utils import format_duration
+from ChSSHKracker.utils.files import read_items
 
 
 def test_format_duration_basic():

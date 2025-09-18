@@ -1,0 +1,7 @@
+root
+admin
+user
+test
+ubuntu
+ec2-user
+pi

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from chsshkracker.cli import build_tasks
+from ChSSHKracker.cli import build_tasks
 
 
 def test_build_tasks(tmp_path):

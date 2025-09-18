@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from chsshkracker.models import HoneypotDetector, ServerInfo
-from chsshkracker.detection.honeypot import analyze_command_output, analyze_response_time, detect_anomalies
+from ChSSHKracker.models import HoneypotDetector, ServerInfo
+from ChSSHKracker.detection.honeypot import analyze_command_output, analyze_response_time, detect_anomalies
 
 
 def test_analyze_command_output_flags_honeypot_keywords():
