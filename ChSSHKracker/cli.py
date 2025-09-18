@@ -101,6 +101,8 @@ def main() -> None:
     parser.add_argument("--ips", required=True, help="Path to IP list file (format: ip:port per line)")
     parser.add_argument("--timeout", type=int, required=True, help="Timeout in seconds for SSH connection and commands")
     parser.add_argument("--workers", type=int, required=True, help="Maximum number of worker threads")
+    parser.add_argument("--memory-limit", type=int, default=512, help="Maximum memory usage in MB (default: 512)")
+    parser.add_argument("--cpu-limit", type=float, default=80.0, help="Maximum CPU usage percentage (default: 80.0)")
     parser.add_argument("--combo", help="Path to prebuilt combo file (username:password per line)")
     parser.add_argument("--usernames", help="Path to username list file (one per line)")
     parser.add_argument("--passwords", help="Path to password list file (one per line)")
@@ -128,6 +130,8 @@ def main() -> None:
         ip_file=ip_file,
         username_file=username_file or "",
         password_file=password_file or "",
+        max_memory_mb=args.memory_limit,
+        max_cpu_percent=args.cpu_limit,
     )
 
     tasks = build_tasks(combo_path, ip_file)
@@ -138,7 +142,7 @@ def main() -> None:
     banner = threading.Thread(target=banner_thread, args=(start, stats, total, cfg), daemon=True)
     banner.start()
 
-    run_pool(tasks, max_workers, timeout_seconds, stats)
+    run_pool(tasks, max_workers, timeout_seconds, stats, cfg.max_memory_mb, cfg.max_cpu_percent)
     banner.join()
 
 
