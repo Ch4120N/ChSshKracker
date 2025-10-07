@@ -1,3 +1,6 @@
+# -*- UTF-8 -*-
+# cli/formatter.py
+
 import argparse
 
 class HelpFormatter(argparse.HelpFormatter):
