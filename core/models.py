@@ -1,5 +1,5 @@
 # -*- UTF-8 -*-
-# core/ssh_client.py
+# core/models.py
 
 from dataclasses import dataclass, field
 from typing import Dict, List
