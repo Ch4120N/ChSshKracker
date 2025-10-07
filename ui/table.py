@@ -1,3 +1,6 @@
+# -*- UTF-8 -*-
+# ui/table.py
+
 import re
 from colorama import Fore, Style, init
 
