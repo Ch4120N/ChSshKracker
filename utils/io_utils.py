@@ -13,7 +13,7 @@ class IO:
             with open(path, 'r', encoding='utf-8', errors='ignore') as file_read:
                 return [line.strip() for line in file_read]
         except Exception:
-            print(f"{MsgDCR.ERROR} Failed to read file: {path}")
+            MsgDCR.FailureMessage(f"Failed to read file: {path}")
     
     @staticmethod
     def file_append(path: str, data: str) -> None:
@@ -22,7 +22,7 @@ class IO:
             with open(file=path, mode="a", encoding="utf-8", errors="ignore") as file_append:
                 file_append.write(data)
         except Exception:
-            print(f"{MsgDCR.ERROR}Failed writing to {path}")
+            MsgDCR.FailureMessage(f"Failed writing to: {path}")
     
     @staticmethod
     def create_combo_file(user_file: str, pass_file: str, combo_path: str) -> None:
@@ -35,7 +35,7 @@ class IO:
                     for p in passwords:
                         combo_file.write(f"{u}:{p}\n")
         except Exception:
-            print(f"{MsgDCR.ERROR} Failed to create combo file: {combo_path}")
+            MsgDCR.FailureMessage(f"Failed to create combo file: {combo_path}")
     
     @staticmethod
     def parse_combo(path: str) -> List[Tuple[str, str]]:
