@@ -14,7 +14,7 @@ from core.config import (
     __version__
 )
 
-from utils import clear_screen, format_duration
+from utils.utils import utils
 from ui.table import Table, Theme
 
 init(autoreset=True)
@@ -67,7 +67,7 @@ class BannerStat:
                 cps) if cps > 0 else 0.0
             success_total = goods + honeypots
 
-            clear_screen()
+            utils.clear_screen()
             
             table.add_block([f'Advanced Ch4120N SSH Brute Force Tool v{__version__}'])
             table.add_block([f'File: {self.files} | Timeout: {self.timeout}s',
@@ -75,10 +75,10 @@ class BannerStat:
                             )
             table.add_block([f'Checked SSH: {total_connections}/{self.total_tasks}',
                             f'Speed: {cps:.2f} checks/sec',
-                            *([f'Elapsed: {format_duration(elapsed)}',
-                                f'Remaining: {format_duration(remaining)}'
+                            *([f'Elapsed: {utils.format_duration(elapsed)}',
+                                f'Remaining: {utils.format_duration(remaining)}'
                                 ] if total_connections < self.total_tasks else 
-                                [f'Total Time: {format_duration(elapsed)}',
+                                [f'Total Time: {utils.format_duration(elapsed)}',
                                 f'Scan Completed Successfully!'
                                 ]
                             )])
