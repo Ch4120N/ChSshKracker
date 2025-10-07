@@ -26,6 +26,9 @@ class StatusDecorator:
         self.STDS = "           "
 
 class MessageDecorator(StatusDecorator):
+    def InfoMessage(self, RequestMessage):
+        print(self.INFO + Style.RESET_ALL + RequestMessage)
+    
     def SuccessMessage(self, RequestMessage):
         print(self.PASS + Style.RESET_ALL + RequestMessage)
 
