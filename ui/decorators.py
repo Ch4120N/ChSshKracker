@@ -44,3 +44,5 @@ class MessageDecorator(StatusDecorator):
 
     def GeneralMessage(self, RequestMessage):
         print(self.STDS + Style.RESET_ALL + RequestMessage)
+
+MsgDCR = MessageDecorator()
