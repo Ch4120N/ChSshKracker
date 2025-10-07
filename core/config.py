@@ -24,12 +24,21 @@ SUMMARY = {
 
 BRUTE_FORCE_STOP_EVENT = Event()
 
+ANSI_ESCAPE = re.compile(r'\x1b\[[0-9;]*m')
+
+class FILES_PATH:
+    IP_FILE: str                 = None
+    USERNAME_FILE: str           = None
+    PASSWORD_FILE: str           = None
+    COMBO_FILE: str              = None
+
+
 class STATS:
-    GOODS:int = 0
-    ERRORS:int = 0
-    HONEYPOTS:int = 0
-    STATS_LOCK = Lock()
-    SUCCESS_MAP_LOCK = Lock()
+    GOODS:int                    = 0
+    ERRORS:int                   = 0
+    HONEYPOTS:int                = 0
+    STATS_LOCK                   = Lock()
+    SUCCESS_MAP_LOCK             = Lock()
     SUCCESSFUL_IP_PORT: set[str] = set()
 
 class DEFAULT_PATH:
@@ -43,6 +52,3 @@ class DEFAULT_CONFIG:
     CONCURRENT_PER_WORKER: int    = 25 # Recommended
     MAX_WORKERS: int              = 25
     START_TIME_MONOTONIC: float   = 0.0
-
-
-ANSI_ESCAPE = re.compile(r'\x1b\[[0-9;]*m')
