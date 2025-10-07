@@ -1,6 +1,7 @@
 # -*- UTF-8 -*-
 # core/config.py
 
+import re
 from threading import Event, Lock
 
 __version__ = '1.3.0'
@@ -42,3 +43,6 @@ class DEFAULT_CONFIG:
     CONCURRENT_PER_WORKER: int    = 25 # Recommended
     MAX_WORKERS: int              = 25
     START_TIME_MONOTONIC: float   = 0.0
+
+
+ANSI_ESCAPE = re.compile(r'\x1b\[[0-9;]*m')
