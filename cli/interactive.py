@@ -38,6 +38,7 @@ class Inputs:
         return Style.from_dict({
             'prompt': 'ansired bold',
             'brackets': 'magenta bold',
+            'bluebrackets' : 'blue bold',
             'arrow': 'white bold',
             'text': prompt_color,
             'key': 'red bold',
@@ -59,13 +60,13 @@ class Inputs:
     def input_continue(self) -> None:
         prompt_message = [
             ('class:text', 'Press '),
-            ('class:brackets', '['),
+            ('class:bluebrackets', '['),
             ('class:key', 'ENTER'),
-            ('class:brackets', ']'),
+            ('class:bluebrackets', ']'),
             ('class:text', ' key to continue /Or Press '),
-            ('class:brackets', '['),
+            ('class:bluebrackets', '['),
             ('class:key', 'CTRL+C'),
-            ('class:brackets', ']'),
+            ('class:bluebrackets', ']'),
             ('class:text', ' hotkey to exit ...'),
         ]
         self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
@@ -73,13 +74,13 @@ class Inputs:
     def input_start_attack(self) -> None:
         prompt_message = [
             ('class:text', 'Press '),
-            ('class:brackets', '['),
+            ('class:bluebrackets', '['),
             ('class:key', 'ENTER'),
-            ('class:brackets', ']'),
+            ('class:bluebrackets', ']'),
             ('class:text', ' key to start brute forcing /Or Press '),
-            ('class:brackets', '['),
+            ('class:bluebrackets', '['),
             ('class:key', 'CTRL+C'),
-            ('class:brackets', ']'),
+            ('class:bluebrackets', ']'),
             ('class:text', ' hotkey to exit ...'),
         ]
         self.input_with_prompt(prompt_message)
@@ -95,9 +96,9 @@ class Inputs:
     def input_continue_with_combos(self):
         prompt_message = [
             ('class:text', 'Do you want to provide a combo file instead of separate user/password lists?'),
-            ('class:brackets', ' ( '),
+            ('class:bluebrackets', ' ( '),
             ('class:confirmcolor', 'y/n'),
-            ('class:brackets', ' ) '),
+            ('class:bluebrackets', ' ) '),
             ('class:text', ': ')
         ]
         return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message).lower()
@@ -123,9 +124,9 @@ class Inputs:
     def input_get_timeout(self):
         prompt_message = [
             ('class:text', 'Enter the connection timeout in seconds'),
-            ('class:brackets', ' ('),
+            ('class:bluebrackets', ' ('),
             ('class:confirmcolor', f'Default: {globalConfig.TIMEOUT_SECS}'),
-            ('class:brackets', ') '),
+            ('class:bluebrackets', ') '),
             ('class:text', ': ')
         ]
         return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
@@ -133,24 +134,21 @@ class Inputs:
     def input_get_max_workers(self):
         prompt_message = [
             ('class:text', 'Enter the maximum number of workers'),
-            ('class:brackets', ' ('),
+            ('class:bluebrackets', ' ('),
             ('class:confirmcolor', f'Default: {globalConfig.MAX_WORKERS}'),
-            ('class:brackets', ') '),
+            ('class:bluebrackets', ') '),
             ('class:text', ': ')
         ]
         return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
     
     def input_get_per_workers(self):
         prompt_message = [
-            ('class:brackets', '\n [ '),
-            ('class:arrow', '>'),
-            ('class:brackets', ' ] '),
             ('class:text', 'Enter the number of concurrent connections per worker'),
-            ('class:brackets', ' ('),
+            ('class:bluebrackets', ' ('),
             ('class:confirmcolor',
                 f'Default: {globalConfig.CONCURRENT_PER_WORKER}. '),
             ('class:key', 'Recommended'),
-            ('class:brackets', ') '),
+            ('class:bluebrackets', ') '),
             ('class:text', ': ')
         ]
         return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
@@ -158,9 +156,9 @@ class Inputs:
     def input_confirm_configurations(self):
         prompt_message = [
             ('class:text', 'Do you want to change any other settings?'),
-            ('class:brackets', ' ( '),
+            ('class:bluebrackets', ' ( '),
             ('class:confirmcolor', 'y/n'),
-            ('class:brackets', ' ) '),
+            ('class:bluebrackets', ' ) '),
             ('class:text', ': ')
         ]
         return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message).lower()
