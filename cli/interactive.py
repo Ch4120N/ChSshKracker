@@ -58,7 +58,6 @@ class Inputs:
 
     def input_continue(self) -> None:
         prompt_message = [
-            self.INPUT_DECORATOR,
             ('class:text', 'Press '),
             ('class:brackets', '['),
             ('class:key', 'ENTER'),
@@ -69,11 +68,10 @@ class Inputs:
             ('class:brackets', ']'),
             ('class:text', ' hotkey to exit ...'),
         ]
-        self.input_with_prompt(prompt_message)
+        self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
 
     def input_start_attack(self) -> None:
         prompt_message = [
-            self.INPUT_DECORATOR,
             ('class:text', 'Press '),
             ('class:brackets', '['),
             ('class:key', 'ENTER'),
@@ -89,61 +87,61 @@ class Inputs:
     # Interactive Inputs
 
     def input_get_ip_file(self):
-        return self.input_with_prompt([
-            self.INPUT_DECORATOR,
+        prompt_message = [
             ('class:text', 'Enter the path to the IP list file: ')
-            ], completer_on=True)
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message, completer_on=True)
     
     def input_continue_with_combos(self):
-        return self.input_with_prompt([
-            self.INPUT_DECORATOR,
+        prompt_message = [
             ('class:text', 'Do you want to provide a combo file instead of separate user/password lists?'),
             ('class:brackets', ' ( '),
             ('class:confirmcolor', 'y/n'),
             ('class:brackets', ' ) '),
             ('class:text', ': ')
-            ]).lower()
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message).lower()
     
     def input_get_combo_file(self):
-        return self.input_with_prompt([
-            self.INPUT_DECORATOR,
+        prompt_message = [
             ('class:text', 'Enter the path to the generated combo file: ')
-            ], completer_on=True)
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message, completer_on=True)
     
     def input_get_user_file(self):
-        return self.input_with_prompt([
-            self.INPUT_DECORATOR,
+        prompt_message = [
             ('class:text', 'Enter the path to the username list file: ')
-            ], completer_on=True)
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message, completer_on=True)
 
     def input_get_password_file(self):
-        return self.input_with_prompt([
-            self.INPUT_DECORATOR,
+        prompt_message = [
             ('class:text', 'Enter the path to the password list file: ')
-            ], completer_on=True)
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message, completer_on=True)
 
     def input_get_timeout(self):
-        return self.input_with_prompt([
-            self.INPUT_DECORATOR,
+        prompt_message = [
             ('class:text', 'Enter the connection timeout in seconds'),
             ('class:brackets', ' ('),
             ('class:confirmcolor', f'Default: {globalConfig.TIMEOUT_SECS}'),
             ('class:brackets', ') '),
             ('class:text', ': ')
-            ])
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
     
     def input_get_max_workers(self):
-        return self.input_with_prompt([
-            self.INPUT_DECORATOR,
+        prompt_message = [
             ('class:text', 'Enter the maximum number of workers'),
             ('class:brackets', ' ('),
             ('class:confirmcolor', f'Default: {globalConfig.MAX_WORKERS}'),
             ('class:brackets', ') '),
             ('class:text', ': ')
-            ])
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
     
     def input_get_per_workers(self):
-        return self.input_with_prompt([
+        prompt_message = [
             ('class:brackets', '\n [ '),
             ('class:arrow', '>'),
             ('class:brackets', ' ] '),
@@ -154,17 +152,18 @@ class Inputs:
             ('class:key', 'Recommended'),
             ('class:brackets', ') '),
             ('class:text', ': ')
-            ])
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
     
     def input_confirm_configurations(self):
-        return self.input_with_prompt([
-            self.INPUT_DECORATOR,
+        prompt_message = [
             ('class:text', 'Do you want to change any other settings?'),
             ('class:brackets', ' ( '),
             ('class:confirmcolor', 'y/n'),
             ('class:brackets', ' ) '),
             ('class:text', ': ')
-            ]).lower()
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message).lower()
 
 
 
