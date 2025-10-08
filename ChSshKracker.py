@@ -198,4 +198,5 @@ class ChSSHKracker:
             sys.exit(2)
 
 if __name__ == '__main__':
-    ChSSHKracker()
+    app = ChSSHKracker()
+    app.run()

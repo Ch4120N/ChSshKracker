@@ -12,3 +12,7 @@ __pycache__/
 venv/
 .vscode/
 TODO.txt
+data/
+ips.txt
+passwd.txt
+users.txt
