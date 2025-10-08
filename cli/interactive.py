@@ -167,7 +167,6 @@ class Inputs:
 
 class InteractiveUI:
     def __init__(self):
-        self.summary = SUMMARY
         self.summary_obj = SummaryRenderer(
             title='Configuration Summary', 
             space=5, 
@@ -201,8 +200,17 @@ class InteractiveUI:
         self.CONFIRM_CONFIGURATION.clear()
     
     def _clear_summary(self):
-        self.summary.clear()
-        self.summary = SUMMARY
+        SUMMARY.clear()
+        SUMMARY = {
+            'IP FILE' : None,
+            'USE COMBO' : None,
+            'COMBO FILE' : None,
+            'USERNAME FILE' : None,
+            'PASSWORD FILE' : None,
+            'TIMEOUT (S)' : 0,
+            'MAX WORKERS' : 0,
+            'PER WORKER' : 0
+        }
     
     def _clear_defaults(self):
         globalConfig.TIMEOUT_SECS = 5
@@ -254,7 +262,7 @@ class InteractiveUI:
             else:
                 self.REQUIRED_IP_EVENT.set()
         
-        self.summary['IP FILE'] = ip_path
+        SUMMARY['IP FILE'] = ip_path
         FILES_PATH.IP_FILE = ip_path
         
     
@@ -262,7 +270,7 @@ class InteractiveUI:
         while not self.USE_COMBO_CONFIRMATION.is_set():
             utils.clear_screen()
             self._print_banner()
-            self.summary_obj.render(self.summary)
+            self.summary_obj.render(SUMMARY)
 
             use_combo = self.inputs.input_continue_with_combos()
 
@@ -272,13 +280,13 @@ class InteractiveUI:
                 continue
         
             elif (use_combo in ['y']):
-                self.summary['USE COMBO'] = 'YES'
+                SUMMARY['USE COMBO'] = 'YES'
                 self.get_combo_file()
                 self.USE_COMBO_CONFIRMATION.set()
             
             elif (use_combo in ['n']):
-                self.summary['USE COMBO'] = 'NO'
-                self.summary['COMBO FILE'] = DEFAULT_PATH.COMBO_FILE
+                SUMMARY['USE COMBO'] = 'NO'
+                SUMMARY['COMBO FILE'] = DEFAULT_PATH.COMBO_FILE
                 FILES_PATH.COMBO_FILE = DEFAULT_PATH.COMBO_FILE
 
                 self.get_user_file()
@@ -293,7 +301,7 @@ class InteractiveUI:
         while not self.REQUIRED_COMBO_FILE_EVENT.is_set():
             utils.clear_screen()
             self._print_banner()
-            self.summary_obj.render(self.summary)
+            self.summary_obj.render(SUMMARY)
 
             combo_list = self.inputs.input_get_combo_file()
             combo_path = os.path.realpath(combo_list)
@@ -314,16 +322,16 @@ class InteractiveUI:
             else:
                 self.REQUIRED_COMBO_FILE_EVENT.set()
 
-        self.summary['COMBO FILE'] = combo_path
-        self.summary['USERNAME FILE'] = 'N/A'
-        self.summary['PASSWORD FILE'] = 'N/A'
+        SUMMARY['COMBO FILE'] = combo_path
+        SUMMARY['USERNAME FILE'] = 'N/A'
+        SUMMARY['PASSWORD FILE'] = 'N/A'
         FILES_PATH.COMBO_FILE = combo_path
     
     def get_user_file(self):
         while not self.REQUIRED_USER_FILE_EVENT.is_set():
             utils.clear_screen()
             self._print_banner()
-            self.summary_obj.render(self.summary)
+            self.summary_obj.render(SUMMARY)
 
             user_list = self.inputs.input_get_user_file()
             user_path = os.path.realpath(user_list)
@@ -344,14 +352,14 @@ class InteractiveUI:
             else:
                 self.REQUIRED_USER_FILE_EVENT.set()
 
-        self.summary['USERNAME FILE'] = user_path
+        SUMMARY['USERNAME FILE'] = user_path
         FILES_PATH.USERNAME_FILE = user_path
 
     def get_pass_file(self):
         while not self.REQUIRED_PASS_FILE_EVENT.is_set():
             utils.clear_screen()
             self._print_banner()
-            self.summary_obj.render(self.summary)
+            self.summary_obj.render(SUMMARY)
 
             pass_list = self.inputs.input_get_password_file()
             pass_path = os.path.realpath(pass_list)
@@ -372,14 +380,14 @@ class InteractiveUI:
             else:
                 self.REQUIRED_PASS_FILE_EVENT.set()
 
-        self.summary['PASSWORD FILE'] = pass_path
+        SUMMARY['PASSWORD FILE'] = pass_path
         FILES_PATH.PASSWORD_FILE = pass_path
 
     def get_timeout(self):
         while not self.REQUIRED_TIMEOUT_EVENT.is_set():
             utils.clear_screen()
             self._print_banner()
-            self.summary_obj.render(self.summary)
+            self.summary_obj.render(SUMMARY)
 
             timeout = self.inputs.input_get_timeout()
 
@@ -397,7 +405,7 @@ class InteractiveUI:
             else:
                 self.REQUIRED_TIMEOUT_EVENT.set()
 
-        self.summary['TIMEOUT (S)'] = timeout
+        SUMMARY['TIMEOUT (S)'] = timeout
         if (timeout):
             globalConfig.TIMEOUT_SECS = int(timeout)
     
@@ -405,7 +413,7 @@ class InteractiveUI:
         while not self.REQUIRED_MAX_WORKERS_EVENT.is_set():
             utils.clear_screen()
             self._print_banner()
-            self.summary_obj.render(self.summary)
+            self.summary_obj.render(SUMMARY)
 
             max_workers = self.inputs.input_get_max_workers()
 
@@ -423,7 +431,7 @@ class InteractiveUI:
             else:
                 self.REQUIRED_MAX_WORKERS_EVENT.set()
 
-        self.summary['MAX WORKERS'] = max_workers
+        SUMMARY['MAX WORKERS'] = max_workers
         if (max_workers):
             globalConfig.MAX_WORKERS = int(max_workers)
     
@@ -431,7 +439,7 @@ class InteractiveUI:
         while not self.REQUIRED_PER_WORKERS_EVENT.is_set():
             utils.clear_screen()
             self._print_banner()
-            self.summary_obj.render(self.summary)
+            self.summary_obj.render(SUMMARY)
 
             per_worker = self.inputs.input_get_per_workers()
 
@@ -449,7 +457,7 @@ class InteractiveUI:
             else:
                 self.REQUIRED_PER_WORKERS_EVENT.set()
 
-        self.summary['PER WORKER'] = per_worker
+        SUMMARY['PER WORKER'] = per_worker
         if (per_worker):
             globalConfig.CONCURRENT_PER_WORKER = int(per_worker)
 
@@ -458,7 +466,7 @@ class InteractiveUI:
         while not self.CONFIRM_CONFIGURATION.is_set():
             utils.clear_screen()
             self._print_banner()
-            self.summary_obj.render(self.summary)
+            self.summary_obj.render(SUMMARY)
 
             confirm = self.inputs.input_confirm_configurations()
 
