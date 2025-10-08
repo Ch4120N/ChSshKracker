@@ -3,7 +3,7 @@
 
 import os
 import sys
-
+import signal
 try:
     import paramiko
     from colorama import Fore, init
@@ -16,3 +16,25 @@ except ImportError:
              '\t- python -m pip install -r requirements.txt\n'
             )
 
+from core.config import (
+    globalConfig,
+    FILES_PATH,
+    SUMMARY
+)
+from utils.io_utils import IO
+from ui.decorators import MsgDCR
+from ui.summary_render import SummaryRenderer
+from cli.interactive import InteractiveUI
+from cli.parser import Parser
+from cli.signals import handle_SIGINT
+
+
+class ChSSHKracker:
+    def __init__(self):
+        signal.signal(signal.SIGINT, handle_SIGINT)
+        self.summary = SUMMARY
+
+        
+
+if __name__ == '__main__':
+    ChSSHKracker()
