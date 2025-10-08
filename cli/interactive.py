@@ -388,6 +388,7 @@ class InteractiveUI:
             timeout = self.inputs.input_get_timeout()
 
             if (not timeout):
+                timeout = globalConfig.TIMEOUT_SECS
                 self.REQUIRED_TIMEOUT_EVENT.set()
             elif (
                 (not timeout.isdigit()) 
@@ -401,7 +402,8 @@ class InteractiveUI:
                 self.REQUIRED_TIMEOUT_EVENT.set()
 
         self.summary['TIMEOUT (S)'] = timeout
-        globalConfig.TIMEOUT_SECS = int(timeout)
+        if (timeout) and (timeout.isdigit()):
+            globalConfig.TIMEOUT_SECS = int(timeout)
     
     def get_max_workers(self):
         while not self.REQUIRED_MAX_WORKERS_EVENT.is_set():
@@ -412,6 +414,7 @@ class InteractiveUI:
             max_workers = self.inputs.input_get_max_workers()
 
             if (not max_workers):
+                max_workers = globalConfig.MAX_WORKERS
                 self.REQUIRED_MAX_WORKERS_EVENT.set()
             elif (
                 (not max_workers.isdigit()) 
@@ -425,7 +428,8 @@ class InteractiveUI:
                 self.REQUIRED_MAX_WORKERS_EVENT.set()
 
         self.summary['MAX WORKERS'] = max_workers
-        globalConfig.MAX_WORKERS = int(max_workers)
+        if (max_workers) and (max_workers.isdigit()):
+            globalConfig.MAX_WORKERS = int(max_workers)
     
     def get_per_workers(self):
         while not self.REQUIRED_PER_WORKERS_EVENT.is_set():
@@ -436,6 +440,7 @@ class InteractiveUI:
             per_worker = self.inputs.input_get_per_workers()
 
             if (not per_worker):
+                per_worker = globalConfig.CONCURRENT_PER_WORKER
                 self.REQUIRED_PER_WORKERS_EVENT.set()
             elif (
                 (not per_worker.isdigit()) 
@@ -449,7 +454,8 @@ class InteractiveUI:
                 self.REQUIRED_PER_WORKERS_EVENT.set()
 
         self.summary['PER WORKER'] = per_worker
-        globalConfig.CONCURRENT_PER_WORKER = int(per_worker)
+        if (per_worker) and (per_worker.isdigit()):
+            globalConfig.CONCURRENT_PER_WORKER = int(per_worker)
 
     def get_confirm_configuration(self):
         self.CONFIRM_CONFIGURATION.clear()
