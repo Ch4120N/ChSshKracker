@@ -4,6 +4,7 @@
 import os
 import sys
 import signal
+import time
 try:
     import paramiko
     from colorama import Fore, init
@@ -16,13 +17,16 @@ except ImportError:
              '\t- python -m pip install -r requirements.txt\n'
             )
 
+from core.worker import WorkerPipeline
 from core.config import (
     globalConfig,
     FILES_PATH,
     DEFAULT_PATH,
     SUMMARY
 )
+from utils.utils import utils
 from utils.io_utils import IO
+from ui.banner import Banners, BannerStat
 from ui.decorators import MsgDCR
 from ui.summary_render import SummaryRenderer
 from cli.interactive import InteractiveUI, Inputs
@@ -42,6 +46,11 @@ class ChSSHKracker:
         )
         self.parser_obj = Parser()
         self.interactive_obj = InteractiveUI()
+        self.inputs_obj = Inputs()
+    
+    def _print_banner(self):
+        utils.clear_screen()
+        print(Fore.LIGHTRED_EX + Banners.MainBanner(2) + Fore.RESET, '\n')
     
     def run(self):
         args = self.parser_obj.build_parser()
@@ -116,32 +125,41 @@ class ChSSHKracker:
                 globalConfig.CONCURRENT_PER_WORKER = per_worker
                 SUMMARY['PER WORKER'] = per_worker
             
-            try:
-                user_file_path = os.path.realpath(user_list)
-                pass_file_path = os.path.realpath(password_list)
-                combo_file_path = os.path.realpath(FILES_PATH.COMBO_FILE)
-                SUMMARY['USERNAME FILE'] = user_file_path
-                SUMMARY['PASSWORD FILE'] = pass_file_path
+            target_ips_path = os.path.realpath(ip_list)
+            user_file_path = os.path.realpath(user_list)
+            pass_file_path = os.path.realpath(password_list)
+            combo_file_path = os.path.realpath(FILES_PATH.COMBO_FILE)
 
+            SUMMARY['IP FILE'] = target_ips_path
+            SUMMARY['USERNAME FILE'] = user_file_path
+            SUMMARY['PASSWORD FILE'] = pass_file_path
+
+            self._print_banner()
+            self.summary_obj.render(SUMMARY)
+            self.inputs_obj.input_start_attack()
+
+            try:
                 IO.create_combo_file(user_file_path, pass_file_path, combo_file_path)
                 MsgDCR.SuccessMessage(f'Combo list created at: {combo_file_path}')
                 self.parse_combos = IO.parse_combo(combo_file_path)
                 MsgDCR.InfoMessage(f'Total combos loaded from generated combo file: {len(self.parse_combos)}')
+                time.sleep(2)
             except Exception:
                 MsgDCR.FailureMessage('Error on creating combo list')
                 sys.exit(1)
             
             try:
-                target_ips_path = os.path.realpath(ip_list)
-                SUMMARY['IP FILE'] = target_ips_path
                 self.parse_target_ips = IO.parse_targets(target_ips_path)
                 MsgDCR.InfoMessage(f'Total target IPs loaded from IP list: {len(self.parse_target_ips)}')
+                time.sleep(2)
             except Exception:
                 MsgDCR.FailureMessage('Error on loading IP list')
                 sys.exit(1)
+        
         else:
             self.interactive_obj.run()
-            
+            self._print_banner()
+
             try:
                 user_file_path = os.path.realpath(FILES_PATH.USERNAME_FILE)
                 pass_file_path = os.path.realpath(FILES_PATH.PASSWORD_FILE)
@@ -151,15 +169,33 @@ class ChSSHKracker:
                 MsgDCR.SuccessMessage(f'Combo list created at: {combo_file_path}')
                 self.parse_combos = IO.parse_combo(combo_file_path)
                 MsgDCR.InfoMessage(f'Total combos loaded from generated combo file: {len(self.parse_combos)}')
+                time.sleep(2)
             except Exception:
                 MsgDCR.FailureMessage('Error on creating combo list')
                 sys.exit(1)
 
+            try:
+                target_ips_path = os.path.realpath(FILES_PATH.IP_FILE)
+                SUMMARY['IP FILE'] = target_ips_path
+                self.parse_target_ips = IO.parse_targets(target_ips_path)
+                MsgDCR.InfoMessage(f'Total target IPs loaded from IP list: {len(self.parse_target_ips)}')
+                time.sleep(2)
+            except Exception:
+                MsgDCR.FailureMessage('Error on loading IP list')
+                sys.exit(1)
 
-        globalConfig.TOTAL_TASKS = len(
+        total_tasks = globalConfig.TOTAL_TASKS = len(
             self.parse_combos) * len(self.parse_target_ips)
         
+        MsgDCR.InfoMessage('Starting the brute-force attack...')
+        time.sleep(2)
 
+        try:
+            worker_pip_line = WorkerPipeline(total_tasks=total_tasks)
+            worker_pip_line.run(self.parse_combos, self.parse_target_ips)
+        except Exception:
+            MsgDCR.FailureMessage('Something went wrong. Please try again!')
+            sys.exit(2)
 
 if __name__ == '__main__':
     ChSSHKracker()
