@@ -402,7 +402,7 @@ class InteractiveUI:
                 self.REQUIRED_TIMEOUT_EVENT.set()
 
         self.summary['TIMEOUT (S)'] = timeout
-        if (timeout) and (timeout.isdigit()):
+        if (timeout):
             globalConfig.TIMEOUT_SECS = int(timeout)
     
     def get_max_workers(self):
@@ -428,7 +428,7 @@ class InteractiveUI:
                 self.REQUIRED_MAX_WORKERS_EVENT.set()
 
         self.summary['MAX WORKERS'] = max_workers
-        if (max_workers) and (max_workers.isdigit()):
+        if (max_workers):
             globalConfig.MAX_WORKERS = int(max_workers)
     
     def get_per_workers(self):
@@ -454,7 +454,7 @@ class InteractiveUI:
                 self.REQUIRED_PER_WORKERS_EVENT.set()
 
         self.summary['PER WORKER'] = per_worker
-        if (per_worker) and (per_worker.isdigit()):
+        if (per_worker):
             globalConfig.CONCURRENT_PER_WORKER = int(per_worker)
 
     def get_confirm_configuration(self):
