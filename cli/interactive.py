@@ -189,7 +189,23 @@ class InteractiveUI:
         self.REQUIRED_TIMEOUT_EVENT = Event()
         self.REQUIRED_MAX_WORKERS_EVENT = Event()
         self.REQUIRED_PER_WORKERS_EVENT = Event()
+        self.CONFIRM_CONFIGURATION = Event()
 
+    def _clear_events(self):
+        self.MAIN_EVENT.clear()
+        self.REQUIRED_IP_EVENT.clear()
+        self.USE_COMBO_CONFIRMATION.clear()
+        self.REQUIRED_COMBO_FILE_EVENT.clear()
+        self.REQUIRED_USER_FILE_EVENT.clear()
+        self.REQUIRED_PASS_FILE_EVENT.clear()
+        self.REQUIRED_TIMEOUT_EVENT.clear()
+        self.REQUIRED_MAX_WORKERS_EVENT.clear()
+        self.REQUIRED_PER_WORKERS_EVENT.clear()
+        self.CONFIRM_CONFIGURATION.clear()
+    
+    def _clear_summary(self):
+        self.summary = SUMMARY
+    
     def _print_banner(self):
         print(Fore.LIGHTRED_EX + Banners.MainBanner(margin_left=2) + Fore.RESET, '\n')
     
@@ -203,7 +219,22 @@ class InteractiveUI:
             self.get_timeout()
             self.get_max_workers()
             self.get_per_workers()
+            self.get_confirm_configuration()
         
+        # ============= DEBUG MODE =============
+        self.summary_obj.render(self.summary)
+        print('\n')
+        print('======= FILE PATHS =======')
+        print('IP FILE:', FILES_PATH.IP_FILE)
+        print('USERNAME FILE:', FILES_PATH.USERNAME_FILE)
+        print('PASSWORD FILE:', FILES_PATH.PASSWORD_FILE)
+        print('COMBO FILE:', FILES_PATH.COMBO_FILE)
+        print('======= GLOBAL CONFIGS =======')
+        print('Timeout (S):', globalConfig.TIMEOUT_SECS)
+        print('Max Workers:', globalConfig.MAX_WORKERS)
+        print('Per Workers:', globalConfig.CONCURRENT_PER_WORKER)
+        print("Done!")
+
     def get_ips(self):
         while not self.REQUIRED_IP_EVENT.is_set():
             utils.clear_screen()
@@ -253,6 +284,8 @@ class InteractiveUI:
             elif (use_combo in ['n']):
                 self.summary['USE COMBO'] = 'NO'
                 self.summary['COMBO FILE'] = DEFAULT_PATH.COMBO_FILE
+                FILES_PATH.COMBO_FILE = DEFAULT_PATH.COMBO_FILE
+
                 self.get_user_file()
                 self.get_pass_file()
                 self.USE_COMBO_CONFIRMATION.set()
@@ -418,3 +451,30 @@ class InteractiveUI:
 
         self.summary['PER WORKER'] = per_worker
         globalConfig.CONCURRENT_PER_WORKER = int(per_worker)
+
+    def get_confirm_configuration(self):
+        self.CONFIRM_CONFIGURATION.clear()
+        while not self.CONFIRM_CONFIGURATION.is_set():
+            utils.clear_screen()
+            self._print_banner()
+            self.summary_obj.render(self.summary)
+
+            confirm = self.inputs.input_confirm_configurations()
+
+            if (not confirm) or (not confirm in ['y', 'n']):
+                MsgDCR.FailureMessage('Please enter valid input: y/n ')
+                self._continue()
+                continue
+        
+            elif (confirm in ['y']):
+                self._clear_events()
+                self._clear_summary()
+                self.CONFIRM_CONFIGURATION.set()
+            
+            elif (confirm in ['n']):
+                self.MAIN_EVENT.set()
+            
+            else:
+                MsgDCR.FailureMessage('Something went wrong. Please try again!')
+                self._continue()
+                continue
