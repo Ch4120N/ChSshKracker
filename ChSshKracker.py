@@ -33,7 +33,10 @@ class ChSSHKracker:
     def __init__(self):
         signal.signal(signal.SIGINT, handle_SIGINT)
         self.summary = SUMMARY
-
+        self.parser_obj = Parser()
+    
+    def run(self):
+        self.parser_obj.build_parser()
         
 
 if __name__ == '__main__':

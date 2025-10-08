@@ -1,6 +1,7 @@
 # -*- UTF-8 -*-
 # cli/parser.py
 
+import sys
 import argparse
 from typing import Callable
 
@@ -19,8 +20,8 @@ from cli.formatter import HelpFormatter
 
 
 class Parser:
-    @staticmethod
-    def build_parser() -> argparse.ArgumentParser:
+    
+    def build_parser(self) -> argparse.Namespace:
         parser = argparse.ArgumentParser(
             prog=SCRIPT_NAME,
             description=SCRIPT_DESCRIPTION,
@@ -45,10 +46,10 @@ class Parser:
                             help="Force interactive prompts", dest="interactive")
         parser.add_argument("-v", "--version", action="version", version=f"{Fore.LIGHTCYAN_EX}\n [ {Fore.LIGHTWHITE_EX}*{Fore.LIGHTCYAN_EX} ] {Fore.LIGHTWHITE_EX}%(prog)s{Fore.LIGHTRED_EX} v{__version__}",
                             help="Shows script version and exit", dest="version")
-        return parser
-    
-    @staticmethod
-    def render_help() -> str:
+        parser.error = lambda message: print(self.render_help()) or sys.exit(2)
+        return parser.parse_args()
+
+    def render_help(self) -> str:
         title = f"{SCRIPT_NAME} - Advanced Ch4120N SSH Brute Force Tool"
         version = __version__
         description = SCRIPT_DESCRIPTION
