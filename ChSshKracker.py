@@ -41,6 +41,7 @@ class ChSSHKracker:
             max_width=80
         )
         self.parser_obj = Parser()
+        self.interactive_obj = InteractiveUI()
     
     def run(self):
         args = self.parser_obj.build_parser()
@@ -122,7 +123,6 @@ class ChSSHKracker:
                 SUMMARY['USERNAME FILE'] = user_file_path
                 SUMMARY['PASSWORD FILE'] = pass_file_path
 
-
                 IO.create_combo_file(user_file_path, pass_file_path, combo_file_path)
                 MsgDCR.SuccessMessage(f'Combo list created at: {combo_file_path}')
                 self.parse_combos = IO.parse_combo(combo_file_path)
@@ -140,9 +140,21 @@ class ChSSHKracker:
                 MsgDCR.FailureMessage('Error on loading IP list')
                 sys.exit(1)
         else:
-            self.interactive_prompts = InteractiveUI()
-            self.interactive_prompts.run()
+            self.interactive_obj.run()
             
+            try:
+                user_file_path = os.path.realpath(FILES_PATH.USERNAME_FILE)
+                pass_file_path = os.path.realpath(FILES_PATH.PASSWORD_FILE)
+                combo_file_path = os.path.realpath(FILES_PATH.COMBO_FILE)
+
+                IO.create_combo_file(user_file_path, pass_file_path, combo_file_path)
+                MsgDCR.SuccessMessage(f'Combo list created at: {combo_file_path}')
+                self.parse_combos = IO.parse_combo(combo_file_path)
+                MsgDCR.InfoMessage(f'Total combos loaded from generated combo file: {len(self.parse_combos)}')
+            except Exception:
+                MsgDCR.FailureMessage('Error on creating combo list')
+                sys.exit(1)
+
 
         globalConfig.TOTAL_TASKS = len(
             self.parse_combos) * len(self.parse_target_ips)
