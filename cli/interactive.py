@@ -229,20 +229,6 @@ class InteractiveUI:
             self.get_max_workers()
             self.get_per_workers()
             self.get_confirm_configuration()
-        
-        # ============= DEBUG MODE =============
-        self.summary_obj.render(self.summary)
-        print('\n')
-        print('======= FILE PATHS =======')
-        print('IP FILE:', FILES_PATH.IP_FILE)
-        print('USERNAME FILE:', FILES_PATH.USERNAME_FILE)
-        print('PASSWORD FILE:', FILES_PATH.PASSWORD_FILE)
-        print('COMBO FILE:', FILES_PATH.COMBO_FILE)
-        print('======= GLOBAL CONFIGS =======')
-        print('Timeout (S):', globalConfig.TIMEOUT_SECS)
-        print('Max Workers:', globalConfig.MAX_WORKERS)
-        print('Per Workers:', globalConfig.CONCURRENT_PER_WORKER)
-        print("Done!")
 
     def get_ips(self):
         while not self.REQUIRED_IP_EVENT.is_set():
