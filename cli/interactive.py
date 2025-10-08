@@ -476,6 +476,7 @@ class InteractiveUI:
             
             elif (confirm in ['n']):
                 self.MAIN_EVENT.set()
+                self.CONFIRM_CONFIGURATION.set()
             
             else:
                 MsgDCR.FailureMessage('Something went wrong. Please try again!')
