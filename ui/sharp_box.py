@@ -10,9 +10,9 @@ from core.config import ANSI_ESCAPE
 
 init(autoreset=True)
 
-class BannerBox:
+class SharpBox:
     """
-    BannerBox renders a boxed help banner
+    SharpBox renders a boxed help banner
     Features:
     - Customizable title, version, usage and options
     - Responsive to terminal width (will shrink content to fit)
