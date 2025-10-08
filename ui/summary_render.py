@@ -24,7 +24,7 @@ class SummaryRenderer:
         print(self.margin_left + '═' * padding + f' {self.title} ' + '═' * padding)
 
         for key, value in summary.items():
-            if value is None or value == '':
+            if value is None or value == '' or value == 0:
                 continue
             key_str = str(key)
             value_str = str(value)
