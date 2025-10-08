@@ -201,7 +201,13 @@ class InteractiveUI:
         self.CONFIRM_CONFIGURATION.clear()
     
     def _clear_summary(self):
+        self.summary.clear()
         self.summary = SUMMARY
+    
+    def _clear_defaults(self):
+        globalConfig.TIMEOUT_SECS = 5
+        globalConfig.MAX_WORKERS = 25
+        globalConfig.CONCURRENT_PER_WORKER = 25
     
     def _print_banner(self):
         print(Fore.LIGHTRED_EX + Banners.MainBanner(margin_left=2) + Fore.RESET, '\n')
@@ -472,6 +478,7 @@ class InteractiveUI:
             elif (confirm in ['y']):
                 self._clear_events()
                 self._clear_summary()
+                self._clear_defaults()
                 self.CONFIRM_CONFIGURATION.set()
             
             elif (confirm in ['n']):
