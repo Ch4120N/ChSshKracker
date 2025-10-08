@@ -37,8 +37,8 @@ class Inputs:
     def build_input_styles(self, prompt_color: str = 'white bold') -> Style:
         return Style.from_dict({
             'prompt': 'ansired bold',
-            'brackets': 'blue bold',
-            'arrow': 'magenta bold',
+            'brackets': 'magenta bold',
+            'arrow': 'white bold',
             'text': prompt_color,
             'key': 'red bold',
             'confirmcolor': 'cyan bold'
