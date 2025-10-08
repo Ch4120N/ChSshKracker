@@ -8,7 +8,7 @@ from colorama import Fore, init
 
 from core.config import (
     BRUTE_FORCE_STOP_EVENT, 
-    DEFAULT_CONFIG,
+    globalConfig,
     FILES_PATH,
     STATS,
     __version__
@@ -49,9 +49,9 @@ class BannerStat:
         self.total_tasks = total_tasks
         self.theme = Theme(Fore.WHITE, Fore.CYAN)
         self.targets = os.path.basename(FILES_PATH.IP_FILE)
-        self.timeout = DEFAULT_CONFIG.TIMEOUT_SECS
-        self.max_worker = DEFAULT_CONFIG.MAX_WORKERS
-        self.per_worker = DEFAULT_CONFIG.CONCURRENT_PER_WORKER
+        self.timeout = globalConfig.TIMEOUT_SECS
+        self.max_worker = globalConfig.MAX_WORKERS
+        self.per_worker = globalConfig.CONCURRENT_PER_WORKER
 
     def run(self):
         while not BRUTE_FORCE_STOP_EVENT.is_set():
@@ -61,7 +61,7 @@ class BannerStat:
                 errors = STATS.ERRORS
                 honeypots = STATS.HONEYPOTS
             total_connections = goods + errors + honeypots
-            elapsed = max(0.001, time.perf_counter() - DEFAULT_CONFIG.START_TIME_MONOTONIC)
+            elapsed = max(0.001, time.perf_counter() - globalConfig.START_TIME_MONOTONIC)
             cps = total_connections / elapsed
             remaining = max(0.0, (self.total_tasks - total_connections) /
                 cps) if cps > 0 else 0.0
