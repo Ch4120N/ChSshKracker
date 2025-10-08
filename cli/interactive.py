@@ -209,6 +209,12 @@ class InteractiveUI:
         globalConfig.MAX_WORKERS = 25
         globalConfig.CONCURRENT_PER_WORKER = 25
     
+    def _clear_file_paths(self):
+        FILES_PATH.IP_FILE = None
+        FILES_PATH.USERNAME_FILE = None
+        FILES_PATH.PASSWORD_FILE = None
+        FILES_PATH.COMBO_FILE = None
+    
     def _print_banner(self):
         print(Fore.LIGHTRED_EX + Banners.MainBanner(margin_left=2) + Fore.RESET, '\n')
     
@@ -479,6 +485,7 @@ class InteractiveUI:
                 self._clear_events()
                 self._clear_summary()
                 self._clear_defaults()
+                self._clear_file_paths()
                 self.CONFIRM_CONFIGURATION.set()
             
             elif (confirm in ['n']):
