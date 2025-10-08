@@ -47,7 +47,6 @@ class Parser:
         return parser
 
     def render_help() -> str:
-        """Return a formatted help/usage banner as string."""
         title = f"{SCRIPT_NAME} - Advanced Ch4120N SSH Brute Force Tool"
         version = __version__
         description = SCRIPT_DESCRIPTION
