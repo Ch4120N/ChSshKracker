@@ -13,10 +13,8 @@ from ui.decorators import MsgDCR
 from ui.table import Table
 from core.config import (
     BRUTE_FORCE_STOP_EVENT,
-    TOTAL_TASKS,
-    FILES_PATH, 
     STATS, 
-    DEFAULT_CONFIG,
+    globalConfig,
     DEFAULT_PATH
 )
 from core.recon import Recon
@@ -27,12 +25,23 @@ from utils.io_utils import IO
 
 
 class WorkerPipeline:
-    def __init__(self):
-        self.total_tasks = TOTAL_TASKS
-        self.timeout = DEFAULT_CONFIG.TIMEOUT_SECS
-        self.max_workers = DEFAULT_CONFIG.MAX_WORKERS
-        self.per_worker = DEFAULT_CONFIG.CONCURRENT_PER_WORKER
-        self.log_file = DEFAULT_PATH.DEBUG_FILE
+    def __init__(self, total_tasks: int,
+                 timeout: int = globalConfig.TIMEOUT_SECS, 
+                 max_workers: int = globalConfig.MAX_WORKERS,
+                 per_worker: int = globalConfig.CONCURRENT_PER_WORKER,
+                 log_file: str = DEFAULT_PATH.DEBUG_FILE,
+                 success_file: str = DEFAULT_PATH.GOODS_FILE,
+                 success_detailed_file: str = DEFAULT_PATH.GOODS_DETAILED_FILE_PATH,
+                 honeypot_file: str = DEFAULT_PATH.HONEYPOTS_FILE
+                 ):
+        self.total_tasks = total_tasks
+        self.timeout = timeout
+        self.max_workers = max_workers
+        self.per_worker = per_worker
+        self.log_file = log_file
+        self.success_file = success_file
+        self.success_detailed_file = success_detailed_file
+        self.honeypot_file = honeypot_file
         self.io = IO()
         self.recon = Recon()
         self.honeypot_engine = HoneypotEngine()
@@ -56,7 +65,7 @@ class WorkerPipeline:
             MsgDCR.FailureMessage("No tasks to run. Check your files.")
             return
 
-        DEFAULT_CONFIG.START_TIME_MONOTONIC = time.perf_counter()
+        globalConfig.START_TIME_MONOTONIC = time.perf_counter()
 
         # Live stats/banner thread
         banner_tasks = BannerStat(self.total_tasks)
@@ -74,7 +83,7 @@ class WorkerPipeline:
                     self.task_q.put(task)
             finally:
                 # Send sentinel Nones to let workers finish
-                for _ in range(DEFAULT_CONFIG.MAX_WORKERS):
+                for _ in range(self.max_workers):
                     self.task_q.put(None)  # type: ignore[arg-type]
 
         prod_t = threading.Thread(target=producer, daemon=True)
@@ -93,9 +102,9 @@ class WorkerPipeline:
 
     def worker_main(self, worker_id: int) -> None:
         semaphore = threading.BoundedSemaphore(
-            DEFAULT_CONFIG.CONCURRENT_PER_WORKER)
+            self.per_worker)
         futures: List[concurrent.futures.Future[None]] = []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=DEFAULT_CONFIG.CONCURRENT_PER_WORKER) as inner_pool:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.per_worker) as inner_pool:
             while True:
                 if BRUTE_FORCE_STOP_EVENT.is_set():
                     break
@@ -193,7 +202,7 @@ class WorkerPipeline:
 
     def log_success(self, server: ServerInfo) -> None:
         simple = f"{server.ip}:{server.port}@{server.username}:{server.password}"
-        self.io.file_append(DEFAULT_PATH.GOODS_FILE, simple + "\n")
+        self.io.file_append(self.success_file, simple + "\n")
         detailed_table = Table(block_padding=4)
         detailed_table.add_block(['SSH SUCCESS'])
         detailed_table.add_block([
@@ -207,5 +216,5 @@ class WorkerPipeline:
             f'Honeypot Score: {server.honeypot_score}',
             f'Timestamp: {(time.strftime("%Y-%m-%d %H:%M:%S"))}'
         ])
-        self.io.file_append(DEFAULT_PATH.GOODS_DETAILED_FILE_PATH,
+        self.io.file_append(self.success_detailed_file,
                     detailed_table.display_plain() + '\n')

@@ -22,9 +22,18 @@ SUMMARY = {
     'PER WORKER' : 0
 }
 
-BRUTE_FORCE_STOP_EVENT = Event()
 
+BRUTE_FORCE_STOP_EVENT = Event()
 ANSI_ESCAPE = re.compile(r'\x1b\[[0-9;]*m')
+
+class globalConfig:
+    TOTAL_TASKS: int = 0
+    TOTAL_IPS: int = 0
+    TIMEOUT_SECS: int             = 5
+    CONCURRENT_PER_WORKER: int    = 25 # Recommended
+    MAX_WORKERS: int              = 25
+    START_TIME_MONOTONIC: float   = 0.0
+
 
 class FILES_PATH:
     IP_FILE: str                 = None
@@ -45,10 +54,5 @@ class DEFAULT_PATH:
     DEBUG_FILE: str               = 'log/debug.log'
     COMBO_FILE: str               = 'data/COMBO.TXT'
     GOODS_FILE: str               = 'data/SSH-GOODS.TXT'
+    GOODS_DETAILED_FILE_PATH: str = 'data/SSH-DETAILS.TXT'
     HONEYPOTS_FILE: str           = 'data/HONEYPOTS.TXT'
-
-class DEFAULT_CONFIG:
-    TIMEOUT_SECS: int             = 5
-    CONCURRENT_PER_WORKER: int    = 25 # Recommended
-    MAX_WORKERS: int              = 25
-    START_TIME_MONOTONIC: float   = 0.0
