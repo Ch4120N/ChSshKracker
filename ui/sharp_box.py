@@ -10,6 +10,7 @@ from core.config import ANSI_ESCAPE
 
 init(autoreset=True)
 
+
 class SharpBox:
     """
     SharpBox renders a boxed help banner
@@ -21,7 +22,7 @@ class SharpBox:
     """
 
     def __init__(self, title: str, version: str = '', description: str = '', usage: str = '', options: list = None, examples: list = None,
-                 width: int = 94, color: bool = True, margin_left:int = None):
+                 width: int = 94, color: bool = True, margin_left: int = None):
         """
         - title: main title string (e.g. 'ChSSHKracker - Ch4120N SSH Kracker')
         - version: version suffix to append to title (e.g. 'v1.3.0')
@@ -51,10 +52,10 @@ class SharpBox:
         return min(max(40, cols), max(40, self.preferred_width))
 
     def _make_border(self):
-        return  ' ' * self.margin_left + '#' * self.width
+        return ' ' * self.margin_left + '#' * self.width
 
     def _make_empty_line(self):
-        return  ' ' * self.margin_left + '#'+(' ' * (self.width-2))+'#'
+        return ' ' * self.margin_left + '#'+(' ' * (self.width-2))+'#'
 
     def _pad_line(self, text: str, align: str = 'left') -> str:
         """Pad a plain text (no ANSI) to fit inner width with alignment and framing hashes."""
@@ -72,7 +73,7 @@ class SharpBox:
         else:
             # left
             body = text + ' ' * space
-        return  ' ' * self.margin_left + f"# {body} #"
+        return ' ' * self.margin_left + f"# {body} #"
 
     def _pad_line_options(self, text: str, align: str = 'left') -> str:
         """Pad a plain text (no ANSI) to fit inner width with alignment and framing hashes."""
@@ -90,7 +91,7 @@ class SharpBox:
         else:
             # left
             body = ' ' * 2 + text + ' ' * (space-2)
-        return  ' ' * self.margin_left + f"# {body} #"
+        return ' ' * self.margin_left + f"# {body} #"
 
     def _pad_line_examples(self, text: str, align: str = 'left') -> str:
         """Pad a plain text (no ANSI) to fit inner width with alignment and framing hashes."""
@@ -109,7 +110,7 @@ class SharpBox:
             # left
             body = ' ' * 2 + '- ' + text + ' ' * (space-4)
         return ' ' * self.margin_left + f"# {body} #"
-    
+
     def _wrap_text(self, text: str, width: int):
         # wrap without breaking words; returns list of strings
         return textwrap.wrap(text, width=width) or ['']
@@ -168,7 +169,8 @@ class SharpBox:
                     opt_name_plain = ANSI_ESCAPE.sub('', str(opt_name))
                     if len(opt_name_plain) >= opt_field_width - 2:
                         # too long, put name on its own line
-                        lines.append(self._pad_line_options(opt_name, align='left'))
+                        lines.append(self._pad_line_options(
+                            opt_name, align='left'))
                         wrapped = self._wrap_text(
                             str(opt_desc), self.inner_width - 2)
                         for w in wrapped:
@@ -205,7 +207,8 @@ class SharpBox:
                     opt_name_plain = ANSI_ESCAPE.sub('', str(opt_name))
                     if len(opt_name_plain) >= opt_field_width - 2:
                         # too long, put name on its own line
-                        lines.append(self._pad_line_examples(opt_name, align='left'))
+                        lines.append(self._pad_line_examples(
+                            opt_name, align='left'))
                         wrapped = self._wrap_text(
                             str(opt_desc), self.inner_width - 2)
                         for w in wrapped:
@@ -238,4 +241,3 @@ class SharpBox:
         data = self.render_plain() if plain else self.render()
         with open(path, 'w', encoding='utf-8') as fh:
             fh.write(data)
-
