@@ -19,7 +19,8 @@ from cli.formatter import HelpFormatter
 
 
 class Parser:
-    def build_parser(self) -> argparse.ArgumentParser:
+    @staticmethod
+    def build_parser() -> argparse.ArgumentParser:
         parser = argparse.ArgumentParser(
             prog=SCRIPT_NAME,
             description=SCRIPT_DESCRIPTION,
@@ -45,7 +46,8 @@ class Parser:
         parser.add_argument("-v", "--version", action="version", version=f"{Fore.LIGHTCYAN_EX}\n [ {Fore.LIGHTWHITE_EX}*{Fore.LIGHTCYAN_EX} ] {Fore.LIGHTWHITE_EX}%(prog)s{Fore.LIGHTRED_EX} v{__version__}",
                             help="Shows script version and exit", dest="version")
         return parser
-
+    
+    @staticmethod
     def render_help() -> str:
         title = f"{SCRIPT_NAME} - Advanced Ch4120N SSH Brute Force Tool"
         version = __version__
