@@ -3,14 +3,15 @@
 
 import os
 import signal
-import threading
-from pathlib import Path
+from threading import Event
 from types import FrameType
 from typing import Optional
 
 from prompt_toolkit import prompt
 from prompt_toolkit.styles import Style
 from prompt_toolkit.shortcuts.prompt import CompleteStyle
+from colorama import Fore, init
+init(autoreset=True)
 
 from core.config import (
     globalConfig,
@@ -20,6 +21,8 @@ from core.config import (
 
 from ui.banner import Banners
 from ui.decorators import MsgDCR
+from ui.summary_render import SummaryRenderer
+from utils.utils import utils
 from cli.path_completer import PathCompleter
 from cli.signals import handle_SIGINT
 
@@ -84,7 +87,7 @@ class Inputs:
 
     # Interactive Inputs
 
-    def input_ip_list(self):
+    def input_get_ip_file(self):
         return self.input_with_prompt([
             self.INPUT_DECORATOR,
             ('class:text', 'Enter the path to the IP list file: ')
@@ -164,3 +167,43 @@ class Inputs:
 
 
 
+class InteractiveUI:
+    def __init__(self):
+        self.summary = SUMMARY
+        self.summary_obj = SummaryRenderer(
+            title='Configuration Summary', 
+            space=5, 
+            margin_left_spaces=2, 
+            max_width=80
+        )
+        self.inputs = Inputs()
+
+        self.MAIN_EVENT = Event()
+        self.REQUIRED_IP_EVENT = Event()
+
+    def _print_banner(self):
+        print(Fore.LIGHTRED_EX + Banners.MainBanner(margin_left=2) + Fore.RESET, '\n')
+    
+    def run(self):
+        while not self.MAIN_EVENT.is_set():
+            self.get_ips()
+    
+    def get_ips(self):
+        while not self.REQUIRED_IP_EVENT.is_set():
+            utils.clear_screen()
+            self._print_banner()
+
+            ip_list = self.inputs.input_get_ip_file()
+
+            if (not ip_list):
+                MsgDCR.FailureMessage("IP list is required!")
+                self.inputs.input_continue()
+            elif (
+                (not os.path.isfile(os.path.realpath(ip_list))) 
+                or 
+                (not os.path.exists(os.path.realpath(ip_list)))
+                ):
+                MsgDCR.FailureMessage(f'IP list does not exist: {os.path.realpath(ip_list)}')
+                self.inputs.input_continue()
+                ip_list = ''
+            
