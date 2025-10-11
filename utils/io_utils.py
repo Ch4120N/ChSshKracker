@@ -1,6 +1,7 @@
 # -*- UTF-8 -*-
 # utils/io_utils.py
 
+import os
 from pathlib import Path
 from typing import List, Tuple
 
@@ -8,33 +9,37 @@ from ui.decorators import MsgDCR
 
 class IO:
     @staticmethod
-    def read_lines(path: Path) -> List[str]:
+    def read_lines(path: str) -> List[str]:
         """Read non-empty, stripped lines from a file."""
         try:
-            with path.open('r', encoding='utf-8', errors='ignore') as file_read:
+            with open(path, 'r', encoding='utf-8', errors='ignore') as file_read:
                 return [line.strip() for line in file_read if line.strip()]
         except Exception:
             MsgDCR.FailureMessage(f"Failed to read file: {path}")
             return []
 
     @staticmethod
-    def file_append(path: Path, data: str) -> None:
+    def file_append(path: str, data: str) -> None:
         """Append data to file, creating it if needed; swallow I/O errors to keep pipeline running."""
         try:
-            path.parent.mkdir(parents=True, exist_ok=True)  # Make sure directory exists
-            with path.open(mode="a", encoding="utf-8", errors="ignore") as file_append:
+            path_dir = os.path.dirname(path)
+            if (not os.path.exists(path_dir)):
+                os.makedirs(path_dir, exist_ok=True)
+            with open(path, mode="a", encoding="utf-8", errors="ignore") as file_append:
                 file_append.write(data)
         except Exception:
             MsgDCR.FailureMessage(f"Failed writing to: {path}")
 
     @staticmethod
-    def create_combo_file(user_file: Path, pass_file: Path, combo_path: Path) -> None:
+    def create_combo_file(user_file: str, pass_file: str, combo_path: str) -> None:
         """Generate username:password combinations and persist to combo file."""
         usernames = IO.read_lines(user_file)
         passwords = IO.read_lines(pass_file)
         try:
-            combo_path.parent.mkdir(parents=True, exist_ok=True)  # Make sure directory exists
-            with combo_path.open(mode="w", encoding="utf-8", errors="ignore") as combo_file:
+            combo_dir = os.path.dirname(combo_path)
+            if (not os.path.exists(combo_path)):
+                os.makedirs(combo_dir, exist_ok=True)
+            with open(combo_path, mode="w", encoding="utf-8", errors="ignore") as combo_file:
                 for u in usernames:
                     for p in passwords:
                         combo_file.write(f"{u}:{p}\n")

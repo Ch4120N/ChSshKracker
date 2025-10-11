@@ -67,36 +67,40 @@ class BannerStat:
                 cps) if cps > 0 else 0.0
             success_total = goods + honeypots
 
-            utils.clear_screen()
+            # utils.clear_screen()
             
-            table.add_block([f'Advanced Ch4120N SSH Brute Force Tool v{__version__}'])
-            table.add_block([f'File: {self.files} | Timeout: {self.timeout}s',
-                            f'Max Workers: {self.max_worker} | Per Worker: {self.per_worker}']
-                            )
-            table.add_block([f'Checked SSH: {total_connections}/{self.total_tasks}',
-                            f'Speed: {cps:.2f} checks/sec',
-                            *([f'Elapsed: {utils.format_duration(elapsed)}',
-                                f'Remaining: {utils.format_duration(remaining)}'
-                                ] if total_connections < self.total_tasks else 
-                                [f'Total Time: {utils.format_duration(elapsed)}',
-                                f'Scan Completed Successfully!'
-                                ]
-                            )])
-            table.add_block([
-                f'Successful: {goods}',
-                f'Failed: {errors}',
-                f'Honeypots: {honeypots}',
-                *(
-                    [
-                        f"Success Rate: {100.0 * goods / (success_total):.2f}%",
-                        f"Honeypot Rate: {100.0 * honeypots / (success_total):.2f}%"
-                    ]
-                    if total_connections > 0 and (success_total) > 0 else []
-                )
-            ])
-            table.add_block(['Powered By Ch4120N',
-                            f"Enhanced Multi-Layer Workers v{__version__}",
-                            "Licence CGBL (Charon General Black Licence)"])
+            print(f'Checked SSH: {total_connections}/{self.total_tasks} | Speed: {cps:.2f} checks/sec | Successful: {goods} | Failed: {errors} | Honeypots: {honeypots}', end='\r', flush=True)
+            # table.add_block([f'Advanced Ch4120N SSH Brute Force Tool v{__version__}'])
+            # table.add_block([f'File: {self.targets} | Timeout: {self.timeout}s',
+            #                 f'Max Workers: {self.max_worker} | Per Worker: {self.per_worker}']
+            #                 )
+            # table.add_block([f'Checked SSH: {total_connections}/{self.total_tasks}',
+            #                 f'Speed: {cps:.2f} checks/sec',
+            #                 *([f'Elapsed: {utils.format_duration(elapsed)}',
+            #                     f'Remaining: {utils.format_duration(remaining)}'
+            #                     ] if total_connections < self.total_tasks else 
+            #                     [f'Total Time: {utils.format_duration(elapsed)}',
+            #                     f'Scan Completed Successfully!'
+            #                     ]
+            #                 )])
+            # table.add_block([
+            #     f'Successful: {goods}',
+            #     f'Failed: {errors}',
+            #     f'Honeypots: {honeypots}',
+            #     *(
+            #         [
+            #             f"Success Rate: {100.0 * goods / (success_total):.2f}%",
+            #             f"Honeypot Rate: {100.0 * honeypots / (success_total):.2f}%"
+            #         ]
+            #         if total_connections > 0 and (success_total) > 0 else []
+            #     )
+            # ])
+            # table.add_block(['Powered By Ch4120N',
+            #                 f"Enhanced Multi-Layer Workers v{__version__}",
+            #                 "Licence CGBL (Charon General Black Licence)"])
 
-            print(table.display())
-            
+            # print(table.display())
+
+            if (total_connections == self.total_tasks):
+                BRUTE_FORCE_STOP_EVENT.set()
+                break

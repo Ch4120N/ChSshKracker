@@ -68,7 +68,7 @@ class ChSSHKracker:
             if ((not os.path.isfile(ip_list)) or (not os.path.exists(ip_list))):
                 MsgDCR.FailureMessage(f'IP list does not exist: {ip_list}')
                 sys.exit(2)
-
+            
             if (combo_list):
                 if ((not os.path.isfile(combo_list)) or (not os.path.exists(combo_list))):
                     MsgDCR.FailureMessage(f'Combo list does not exist: {combo_list}')
@@ -130,6 +130,7 @@ class ChSSHKracker:
             pass_file_path = os.path.realpath(password_list)
             combo_file_path = os.path.realpath(FILES_PATH.COMBO_FILE)
 
+            FILES_PATH.IP_FILE = os.path.realpath(target_ips_path)
             SUMMARY['IP FILE'] = target_ips_path
             SUMMARY['USERNAME FILE'] = user_file_path
             SUMMARY['PASSWORD FILE'] = pass_file_path
@@ -137,7 +138,8 @@ class ChSSHKracker:
             self._print_banner()
             self.summary_obj.render(SUMMARY)
             self.inputs_obj.input_start_attack()
-
+            self._print_banner()
+            
             try:
                 IO.create_combo_file(user_file_path, pass_file_path, combo_file_path)
                 MsgDCR.SuccessMessage(f'Combo list created at: {combo_file_path}')
@@ -190,12 +192,12 @@ class ChSSHKracker:
         MsgDCR.InfoMessage('Starting the brute-force attack...')
         time.sleep(2)
 
-        try:
-            worker_pip_line = WorkerPipeline(total_tasks=total_tasks)
-            worker_pip_line.run(self.parse_combos, self.parse_target_ips)
-        except Exception:
-            MsgDCR.FailureMessage('Something went wrong. Please try again!')
-            sys.exit(2)
+        # try:
+        worker_pip_line = WorkerPipeline(total_tasks=total_tasks)
+        worker_pip_line.run(self.parse_combos, self.parse_target_ips)
+        # except Exception as ex:
+        #     MsgDCR.FailureMessage(f'Something went wrong. Please try again!: {ex}')
+        #     sys.exit(2)
 
 if __name__ == '__main__':
     app = ChSSHKracker()

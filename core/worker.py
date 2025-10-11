@@ -5,6 +5,7 @@ import time
 import queue
 import threading
 import concurrent.futures
+import signal
 from typing import Iterable, List, Tuple, Union
 from pathlib import Path
 
@@ -22,7 +23,7 @@ from core.honeypot import HoneypotEngine
 from core.ssh_client import SSH_CONNECT
 from core.models import ServerInfo, HoneypotDetector, SSHTask
 from utils.io_utils import IO
-
+from cli.signals import handle_SIGINT
 
 class WorkerPipeline:
     def __init__(self, total_tasks: int,
@@ -140,13 +141,18 @@ class WorkerPipeline:
 
         t0 = time.perf_counter()
         try:
-            with SSH_CONNECT(task.username, task.password, self.timeout) as ssh:
-                try:
-                    ssh.connect(task.ip, task.port)
-                except Exception:
-                    with STATS.STATS_LOCK:
-                        STATS.ERRORS += 1
-                    return
+            with SSH_CONNECT(hostname=task.ip,
+                             port=int(task.port), 
+                             username=task.username, 
+                             password=task.password, 
+                             timeout=self.timeout
+                             ) as ssh:
+                # try:
+                #     ssh.connect_safe()
+                # except Exception:
+                #     with STATS.STATS_LOCK:
+                #         STATS.ERRORS += 1
+                #     return
 
                 server = ServerInfo(
                     ip=task.ip,
@@ -192,12 +198,12 @@ class WorkerPipeline:
                 self.log_file,
                 f"[RUNTIME ERROR] {task.ip}:{task.port}@{task.username}:{task.password}\n",
             )
-        except Exception:
+        except Exception as ex:
             with STATS.STATS_LOCK:
                 STATS.ERRORS += 1
             self.io.file_append(
                 self.log_file,
-                f"[NOT CONNECTED] {task.ip}:{task.port}@{task.username}:{task.password}\n",
+                f"[NOT CONNECTED] {task.ip}:{task.port}@{task.username}:{task.password} with error: {ex}\n",
             )
 
     def log_success(self, server: ServerInfo) -> None:
