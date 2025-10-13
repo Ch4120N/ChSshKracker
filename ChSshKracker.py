@@ -33,6 +33,7 @@ from cli.interactive import InteractiveUI, Inputs
 from cli.parser import Parser
 from cli.signals import handle_SIGINT
 
+sys.stderr = open(os.devnull, 'w')
 
 class ChSSHKracker:
     def __init__(self):

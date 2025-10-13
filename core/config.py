@@ -52,6 +52,7 @@ class STATS:
 
 class DEFAULT_PATH:
     DEBUG_FILE: str               = 'log/debug.log'
+    EXCEPTIONS_FILE: str          = 'log/exceptions.log'
     COMBO_FILE: str               = 'data/COMBO.TXT'
     GOODS_FILE: str               = 'data/SSH-GOODS.TXT'
     GOODS_DETAILED_FILE_PATH: str = 'data/SSH-DETAILS.TXT'

@@ -3,12 +3,11 @@
 
 import re
 from typing import List
-from core.ssh_client import SSH_CONNECT
 from core.models import ServerInfo
 
 
 class Recon:
-    def gather_system_info(self, ssh: SSH_CONNECT, server: ServerInfo) -> None:
+    def gather_system_info(self, ssh, server: ServerInfo) -> None:
         commands = {
             "hostname": "hostname",
             "uname": "uname -a",

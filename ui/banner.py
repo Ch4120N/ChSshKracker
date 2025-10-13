@@ -3,6 +3,7 @@
 
 import os
 import time
+import threading
 
 from colorama import Fore, init
 
@@ -52,11 +53,12 @@ class BannerStat:
         self.timeout = globalConfig.TIMEOUT_SECS
         self.max_worker = globalConfig.MAX_WORKERS
         self.per_worker = globalConfig.CONCURRENT_PER_WORKER
+        self._stats_lock = threading.Lock()
 
     def run(self):
         while not BRUTE_FORCE_STOP_EVENT.is_set():
             table = Table(self.theme, parent_border=4)
-            with STATS.STATS_LOCK:
+            with self._stats_lock:
                 goods = STATS.GOODS
                 errors = STATS.ERRORS
                 honeypots = STATS.HONEYPOTS

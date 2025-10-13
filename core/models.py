@@ -11,7 +11,7 @@ class SSHTask:
     port: str
     username: str
     password: str
-
+    timeout: int
 
 @dataclass
 class ServerInfo:

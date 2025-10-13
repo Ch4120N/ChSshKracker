@@ -20,3 +20,4 @@ users.txt
 paramiko/
 lib/
 tests/
+ssh_advanced.py

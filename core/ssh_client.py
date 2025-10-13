@@ -2,101 +2,65 @@
 # core/ssh_client.py
 
 import threading
-import socket
+import time
+import random
 from typing import Optional, Union
 
-import lib.SSH as SSH
+from paramiko import SSHClient, AutoAddPolicy, AuthenticationException
 
-class SSH_CONNECT(SSH.SSHClient):
-    def __init__(
-        self,
-        hostname: str,
-        port: int = 22,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        key_filename: Optional[str] = None,
-        timeout: Optional[Union[int, float]] = 30,
-        **kwargs
-    ):
+from utils.io_utils import IO
+from core.config import DEFAULT_PATH
+
+
+class SSH_CONNECT(SSHClient):  # type: ignore[name-defined]
+    """Paramiko SSHClient subclass with hardened connect and safe exec."""
+
+    def __init__(self, username: str, password: str, timeout: int) -> None:
         super().__init__()
-        self.set_missing_host_key_policy(SSH.AutoAddPolicy())
-
-        self._hostname = hostname
-        self._port = port
+        self.set_missing_host_key_policy(AutoAddPolicy())
         self._username = username
         self._password = password
-        self._key_filename = key_filename
         self._timeout = timeout
-        self._kwargs = kwargs
 
-        self._lock = threading.RLock()
-        self._connected = False
+    def __enter__(self) -> "SSH_CONNECT":
+        return self
 
-    def connect_safe(self) -> bool:
-        with self._lock:
-            if self._connected:
-                return True
+    def __exit__(self, exc_type, exc, tb) -> None:  # noqa: ANN001
+        self.close()
 
+    def connect(self, hostname, port=22):  # noqa: ANN001
+        attempts = 0
+        last_exc: Optional[Exception] = None
+        while attempts < 3:
+            attempts += 1
             try:
                 super().connect(
-                    hostname=self._hostname,
-                    port=self._port,
+                    hostname=hostname,
+                    port=int(port),
                     username=self._username,
                     password=self._password,
-                    key_filename=self._key_filename,
                     look_for_keys=False,
                     allow_agent=False,
                     timeout=self._timeout,
-                    **self._kwargs
+                    auth_timeout=self._timeout,
+                    banner_timeout=self._timeout,
                 )
-                self._connected = True
-                return True
-            except (
-                Exception,
-                EOFError,
-                OSError,
-                socket.error, 
-                socket.timeout, 
-                SSH.AuthenticationException, 
-                SSH.BadAuthenticationType,
-                SSH.BadHostKeyException,
-                SSH.SSHException,
-                SSH.ssh_exception.SSHException
-                ):
-                self._connected = False
-                return False
-
-    def run(self, command: str, timeout: Optional[Union[int, float]] = None) -> str:
-        with self._lock:
-            if not self._connected:
-                return "ERROR: Not connected"
-
-            try:
-                actual_timeout = timeout if timeout is not None else self._timeout
-                stdin, stdout, stderr = self.exec_command(command, timeout=actual_timeout)
-                out = stdout.read().decode(errors="ignore")
-                err = stderr.read().decode(errors="ignore")
-
-                if err.strip():
-                    return f"ERROR: {err.strip()}"
-                return out
+                return
             except Exception as exc:
-                return f"ERROR: {exc}"
-
-    def close(self):
-        with self._lock:
-            try:
-                super().close()
-                self._connected = False
-                return True
-            except Exception:
-                return False
-    def __enter__(self):
-        """Auto-connect when entering 'with' block."""
-        if not self.connect_safe():
-            raise ConnectionError(f"Failed to connect to {self._hostname}")
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Auto-close when leaving 'with' block."""
-        self.close()
+                last_exc = exc
+                msg = str(exc).lower()
+                retryable = any(k in msg for k in (
+                    "error reading ssh protocol banner",
+                    "ssh exception",
+                    "no existing session",
+                    "socket is closed",
+                    "timed out",
+                    "timeout",
+                    "connection reset",
+                    "no valid connections",
+                ))
+                if attempts < 3 and retryable:
+                    time.sleep(0.1 * attempts + random.uniform(0, 0.1))
+                    continue
+                break
+        raise RuntimeError(f"connect failed {hostname}:{port}: {last_exc}")
