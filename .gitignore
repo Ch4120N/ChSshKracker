@@ -9,15 +9,23 @@ __pycache__/
 *.pyzwz
 *.pyzwzw
 *.pyzwzwz
+# Virtual Env and Vs code configs
 venv/
 .vscode/
-TODO.txt
+# New Version of Script Directorys
 data/
 log/
+ui/
+utils/
+tests/
+core/
+cli/
+lib/
+tests/
+# Tests Files
+TODO.txt
 ips.txt
 passwd.txt
 users.txt
-paramiko/
-lib/
-tests/
+
 ssh_advanced.py
