@@ -12,7 +12,7 @@ from core.config import (
     __version__,
     SCRIPT_NAME,
     SCRIPT_DESCRIPTION,
-    globalConfig
+    Config
 )
 from ui.sharp_box import SharpBox
 from ui.banner import Banners
@@ -33,14 +33,14 @@ class Parser:
         parser.add_argument("-P", "--password-list", type=str,
                             help="Path to passwords file (one per line)", dest="password_list")
         parser.add_argument("-I", "--ip-list", type=str,
-                            help="Path to targets file (ip[:port] per line)", dest="ip_list")
+                            help="Path to targets file (ip[:port] per line)", dest="ip_list", required=True)
         parser.add_argument("-C", "--combo-list", type=str,
                             help="Generated combo file path", dest="combo_list")
-        parser.add_argument("-t", "--timeout", type=int, default=globalConfig.TIMEOUT_SECS,
+        parser.add_argument("-t", "--timeout", type=int, default=Config.TIMEOUT,
                             help="Connection timeout seconds", dest="timeout")
-        parser.add_argument("-w", "--workers", type=int, default=globalConfig.MAX_WORKERS,
+        parser.add_argument("-w", "--workers", type=int, default=Config.MAX_WORKERS,
                             help="Max number of workers", dest="workers")
-        parser.add_argument("--per-worker", type=int, default=globalConfig.CONCURRENT_PER_WORKER,
+        parser.add_argument("--per-worker", type=int, default=Config.CONCURRENT_PER_WORKER,
                             help="Concurrent connections per worker", dest="per_worker")
         parser.add_argument("--interactive", action="store_true",
                             help="Force interactive prompts", dest="interactive")
@@ -53,7 +53,7 @@ class Parser:
         title = f"{SCRIPT_NAME} - Advanced Ch4120N SSH Brute Force Tool"
         version = __version__
         description = SCRIPT_DESCRIPTION
-        usage = 'Usage: python ChSshKracker.py [OPTIONS]'
+        usage = 'Usage: python ChSshKracker.py -I [IP LIST] [OPTIONS]'
         options = [
             ('-h, --help', 'Show this help message and exit'),
             ('-v, --version', 'Show script version and exit'),

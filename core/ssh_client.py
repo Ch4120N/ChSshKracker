@@ -2,65 +2,68 @@
 # core/ssh_client.py
 
 import threading
-import time
-import random
 from typing import Optional, Union
 
 from paramiko import SSHClient, AutoAddPolicy, AuthenticationException
 
-from utils.io_utils import IO
-from core.config import DEFAULT_PATH
 
-
-class SSH_CONNECT(SSHClient):  # type: ignore[name-defined]
-    """Paramiko SSHClient subclass with hardened connect and safe exec."""
-
-    def __init__(self, username: str, password: str, timeout: int) -> None:
+class SSH(SSHClient):
+    def __init__(self, hostname: str, port: int, username: str, password: str, timeout: int) -> None:
         super().__init__()
-        self.set_missing_host_key_policy(AutoAddPolicy())
+
+        self._hostname = hostname
+        self._port = port
         self._username = username
         self._password = password
         self._timeout = timeout
 
-    def __enter__(self) -> "SSH_CONNECT":
-        return self
-
-    def __exit__(self, exc_type, exc, tb) -> None:  # noqa: ANN001
-        self.close()
-
-    def connect(self, hostname, port=22):  # noqa: ANN001
-        attempts = 0
-        last_exc: Optional[Exception] = None
-        while attempts < 3:
-            attempts += 1
-            try:
-                super().connect(
-                    hostname=hostname,
-                    port=int(port),
-                    username=self._username,
-                    password=self._password,
-                    look_for_keys=False,
-                    allow_agent=False,
-                    timeout=self._timeout,
-                    auth_timeout=self._timeout,
-                    banner_timeout=self._timeout,
+        self._lock = threading.Lock()
+        self._connected = False
+        self.set_missing_host_key_policy(AutoAddPolicy())
+    
+    def connect_safe(self):
+        with self._lock:
+            if self._connected:
+                return True
+        
+        try:
+            self.connect(
+                hostname=self._hostname, 
+                port=self._port, 
+                username=self._username, 
+                password=self._password, 
+                timeout=self._timeout, 
+                allow_agent=False, 
+                look_for_keys=False
                 )
-                return
+            with self._lock:
+                self._connected = True
+                return True
+        except AuthenticationException:
+            with self._lock:
+                self._connected = False
+            raise Exception('Connection Failed!')
+        except Exception:
+            with self._lock:
+                self._connected = False
+            raise Exception('Connection Failed!')
+        finally:
+            if 'client' in locals():
+                self.close()
+
+    def run(self, command: str, timeout: Optional[Union[int, float]] = None) -> str:
+        with self._lock:
+            if not self._connected:
+                return "ERROR: Not connected"
+
+            try:
+                actual_timeout = timeout if timeout is not None else self._timeout
+                stdin, stdout, stderr = self.exec_command(command, timeout=actual_timeout)
+                out = stdout.read().decode(errors="ignore")
+                err = stderr.read().decode(errors="ignore")
+
+                if err.strip():
+                    return f"ERROR: {err.strip()}"
+                return out
             except Exception as exc:
-                last_exc = exc
-                msg = str(exc).lower()
-                retryable = any(k in msg for k in (
-                    "error reading ssh protocol banner",
-                    "ssh exception",
-                    "no existing session",
-                    "socket is closed",
-                    "timed out",
-                    "timeout",
-                    "connection reset",
-                    "no valid connections",
-                ))
-                if attempts < 3 and retryable:
-                    time.sleep(0.1 * attempts + random.uniform(0, 0.1))
-                    continue
-                break
-        raise RuntimeError(f"connect failed {hostname}:{port}: {last_exc}")
+                return f"ERROR: {exc}"

@@ -12,47 +12,44 @@ try:
     init(autoreset=True)
 except ImportError:
     sys.exit('\n [ - ] Please install requirements libraries. Using commands below:\n' \
-             '\t- python -m pip install cryptography==40.0.2 paramiko==3.4.0 colorama==0.4.6 prompt_toolkit==3.0.52\n' \
+             '\t- python -m pip install cryptography==40.0.2 paramiko==2.11.0 colorama==0.4.6 prompt_toolkit==3.0.52\n' \
              '\t- Or\n' \
              '\t- python -m pip install -r requirements.txt\n'
             )
 
-from core.worker import WorkerPipeline
+from core.worker import Worker
 from core.config import (
-    globalConfig,
-    FILES_PATH,
-    DEFAULT_PATH,
-    SUMMARY
+    Config,
+    FILE_PATH,
+    _total_tasks,
+    _stop_event
 )
-from utils.utils import utils
-from utils.io_utils import IO
-from ui.banner import Banners, BannerStat
+
+from utils.file_manager import FileManager
 from ui.decorators import MsgDCR
-from ui.summary_render import SummaryRenderer
-from cli.interactive import InteractiveUI, Inputs
+from ui.summary_render import SummaryRenderer, GetSummary
 from cli.parser import Parser
-from cli.signals import handle_SIGINT
+
+def handle_SIGINT(frm, func):
+    print()
+    MsgDCR.FailureMessage('Program Interrupted By User!')
+    _stop_event.set()
+    os.kill(os.getpid(), signal.SIGTERM)
+
+signal.signal(signal.SIGINT, handle_SIGINT)
 
 sys.stderr = open(os.devnull, 'w')
 
 class ChSSHKracker:
-    def __init__(self):
-        signal.signal(signal.SIGINT, handle_SIGINT)
-
+    def __init__(self) -> None:
         self.summary_obj = SummaryRenderer(
-            title='Configuration Summary', 
-            space=5, 
-            margin_left_spaces=2,
-            max_width=80
+                    title='Configuration Summary', 
+                    space=5, 
+                    global_margin_left_spaces=2,
+                    max_width=80
         )
         self.parser_obj = Parser()
-        self.interactive_obj = InteractiveUI()
-        self.inputs_obj = Inputs()
-    
-    def _print_banner(self):
-        utils.clear_screen()
-        print(Fore.LIGHTRED_EX + Banners.MainBanner(2) + Fore.RESET, '\n')
-    
+
     def run(self):
         args = self.parser_obj.build_parser()
 
@@ -65,140 +62,103 @@ class ChSSHKracker:
         per_worker = args.per_worker
         interactive_flag = args.interactive
 
-        if (not interactive_flag and (ip_list and combo_list or user_list or password_list)):
+        if (ip_list):
             if ((not os.path.isfile(ip_list)) or (not os.path.exists(ip_list))):
                 MsgDCR.FailureMessage(f'IP list does not exist: {ip_list}')
                 sys.exit(2)
-            
-            if (combo_list):
-                if ((not os.path.isfile(combo_list)) or (not os.path.exists(combo_list))):
-                    MsgDCR.FailureMessage(f'Combo list does not exist: {combo_list}')
-                    sys.exit(2)
-                combo_list_path = os.path.realpath(combo_list)
-                try:
-                    self.parse_combos = IO.parse_combo(combo_list_path)
-                except Exception:
-                    MsgDCR.FailureMessage('Error on loading combo list')
-                    sys.exit(2)
-                SUMMARY['USE COMBO'] = 'YES'
-                SUMMARY['COMBO FILE'] = combo_list_path
-                FILES_PATH.COMBO_FILE = combo_list_path
-            
-            else:
-                SUMMARY['USE COMBO'] = 'No'
-                SUMMARY['COMBO FILE'] = DEFAULT_PATH.COMBO_FILE
-                FILES_PATH.COMBO_FILE = DEFAULT_PATH.COMBO_FILE
-
-                if (user_list):
-                    if ((not os.path.isfile(user_list)) or (not os.path.exists(user_list))):
-                        MsgDCR.FailureMessage(f'Username list does not exist: {user_list}')
-                        sys.exit(2)
-                else:
-                    MsgDCR.FailureMessage('Username list is required if your not using combo file')
-                    sys.exit(1)
-
-                if (password_list):
-                    if ((not os.path.isfile(password_list)) or (not os.path.exists(password_list))):
-                        MsgDCR.FailureMessage(f'Password list does not exist: {password_list}')
-                        sys.exit(2)
-                else:
-                    MsgDCR.FailureMessage('Password list is required if your not using combo file')
-                    sys.exit(1)
-
-            if (timeout):
-                if (int(timeout) < 1):
-                    MsgDCR.FailureMessage('Please enter valid positive integer for timeout')
-                    sys.exit(2)
-                globalConfig.TIMEOUT_SECS = timeout
-                SUMMARY['TIMEOUT (S)'] = timeout
-            
-            if (max_workers):
-                if (int(max_workers) < 1):
-                    MsgDCR.FailureMessage('Please enter valid positive integer for workers')
-                    sys.exit(2)
-                globalConfig.MAX_WORKERS = max_workers
-                SUMMARY['MAX WORKERS'] = max_workers
-            
-            if (per_worker):
-                if (int(per_worker) < 1):
-                    MsgDCR.FailureMessage('Please enter valid positive integer for per worker')
-                    sys.exit(2)
-                globalConfig.CONCURRENT_PER_WORKER = per_worker
-                SUMMARY['PER WORKER'] = per_worker
-            
-            target_ips_path = os.path.realpath(ip_list)
-            user_file_path = os.path.realpath(user_list)
-            pass_file_path = os.path.realpath(password_list)
-            combo_file_path = os.path.realpath(FILES_PATH.COMBO_FILE)
-
-            FILES_PATH.IP_FILE = os.path.realpath(target_ips_path)
-            SUMMARY['IP FILE'] = target_ips_path
-            SUMMARY['USERNAME FILE'] = user_file_path
-            SUMMARY['PASSWORD FILE'] = pass_file_path
-
-            self._print_banner()
-            self.summary_obj.render(SUMMARY)
-            self.inputs_obj.input_start_attack()
-            self._print_banner()
-            
+        else:
+            print(self.parser_obj.render_help())
+        
+        Config.IP_FILE = os.path.realpath(ip_list)
+    
+        if (combo_list):
+            if ((not os.path.isfile(combo_list)) or (not os.path.exists(combo_list))):
+                MsgDCR.FailureMessage(f'Combo list does not exist: {combo_list}')
+                sys.exit(2)
+            combo_list_path = os.path.realpath(combo_list)
             try:
-                IO.create_combo_file(user_file_path, pass_file_path, combo_file_path)
-                MsgDCR.SuccessMessage(f'Combo list created at: {combo_file_path}')
-                self.parse_combos = IO.parse_combo(combo_file_path)
-                MsgDCR.InfoMessage(f'Total combos loaded from generated combo file: {len(self.parse_combos)}')
-                time.sleep(2)
+                self.parse_combos = FileManager.parse_combo(combo_list_path)
             except Exception:
-                MsgDCR.FailureMessage('Error on creating combo list')
-                sys.exit(1)
-            
-            try:
-                self.parse_target_ips = IO.parse_targets(target_ips_path)
-                MsgDCR.InfoMessage(f'Total target IPs loaded from IP list: {len(self.parse_target_ips)}')
-                time.sleep(2)
-            except Exception:
-                MsgDCR.FailureMessage('Error on loading IP list')
-                sys.exit(1)
+                MsgDCR.FailureMessage('Error on loading combo list')
+                sys.exit(2)
+            Config.USE_COMBO = True
+            Config.COMBO_FILE = combo_list_path
         
         else:
-            self.interactive_obj.run()
-            self._print_banner()
+            Config.USE_COMBO = False
+            Config.COMBO_FILE = os.path.realpath(FILE_PATH.COMBO_FILE)
 
+            if (user_list):
+                if ((not os.path.isfile(user_list)) or (not os.path.exists(user_list))):
+                    MsgDCR.FailureMessage(f'Username list does not exist: {user_list}')
+                    sys.exit(2)
+            else:
+                MsgDCR.FailureMessage('Username list is required if your not using combo file')
+                sys.exit(1)
+
+            if (password_list):
+                if ((not os.path.isfile(password_list)) or (not os.path.exists(password_list))):
+                    MsgDCR.FailureMessage(f'Password list does not exist: {password_list}')
+                    sys.exit(2)
+            else:
+                MsgDCR.FailureMessage('Password list is required if your not using combo file')
+                sys.exit(1)
+            
+            Config.USERNAME_FILE = os.path.realpath(user_list)
+            Config.PASSWORD_FILE = os.path.realpath(password_list)
+        
+        if (timeout):
+            if (int(timeout) < 1):
+                MsgDCR.FailureMessage('Please enter valid positive integer for timeout')
+                sys.exit(2)
+            Config.TIMEOUT = timeout
+        
+        if (max_workers):
+            if (int(max_workers) < 1):
+                MsgDCR.FailureMessage('Please enter valid positive integer for workers')
+                sys.exit(2)
+            Config.MAX_WORKERS = max_workers
+        
+        if (per_worker):
+            if (int(per_worker) < 1):
+                MsgDCR.FailureMessage('Please enter valid positive integer for per worker')
+                sys.exit(2)
+            Config.CONCURRENT_PER_WORKER = per_worker
+        
+        if not Config.USE_COMBO:
             try:
-                user_file_path = os.path.realpath(FILES_PATH.USERNAME_FILE)
-                pass_file_path = os.path.realpath(FILES_PATH.PASSWORD_FILE)
-                combo_file_path = os.path.realpath(FILES_PATH.COMBO_FILE)
-
-                IO.create_combo_file(user_file_path, pass_file_path, combo_file_path)
-                MsgDCR.SuccessMessage(f'Combo list created at: {combo_file_path}')
-                self.parse_combos = IO.parse_combo(combo_file_path)
+                FileManager.create_combo_file(Config.USERNAME_FILE, Config.PASSWORD_FILE, Config.COMBO_FILE)
+                MsgDCR.SuccessMessage(f'Combo list created at: {Config.COMBO_FILE}')
+                self.parse_combos = FileManager.parse_combo(Config.COMBO_FILE)
                 MsgDCR.InfoMessage(f'Total combos loaded from generated combo file: {len(self.parse_combos)}')
                 time.sleep(2)
             except Exception:
                 MsgDCR.FailureMessage('Error on creating combo list')
                 sys.exit(1)
-
-            try:
-                target_ips_path = os.path.realpath(FILES_PATH.IP_FILE)
-                SUMMARY['IP FILE'] = target_ips_path
-                self.parse_target_ips = IO.parse_targets(target_ips_path)
-                MsgDCR.InfoMessage(f'Total target IPs loaded from IP list: {len(self.parse_target_ips)}')
-                time.sleep(2)
-            except Exception:
-                MsgDCR.FailureMessage('Error on loading IP list')
-                sys.exit(1)
-
-        total_tasks = globalConfig.TOTAL_TASKS = len(
-            self.parse_combos) * len(self.parse_target_ips)
         
+        try:
+            self.parse_target_ips = FileManager.parse_targets(Config.IP_FILE)
+            MsgDCR.InfoMessage(f'Total target IPs loaded from IP list: {len(self.parse_target_ips)}')
+            time.sleep(2)
+        except Exception:
+            MsgDCR.FailureMessage('Error on loading IP list')
+            sys.exit(1)
+        
+        _total_tasks = (len(self.parse_combos) * len(self.parse_target_ips))
+
         MsgDCR.InfoMessage('Starting the brute-force attack...')
         time.sleep(2)
 
-        # try:
-        worker_pip_line = WorkerPipeline(total_tasks=total_tasks)
-        worker_pip_line.run(self.parse_combos, self.parse_target_ips)
-        # except Exception as ex:
-        #     MsgDCR.FailureMessage(f'Something went wrong. Please try again!: {ex}')
-        #     sys.exit(2)
+        worker = Worker(
+            combos=self.parse_combos, 
+            targets=self.parse_target_ips, 
+            total_tasks=_total_tasks, 
+            timeout=Config.TIMEOUT, 
+            max_workers=Config.MAX_WORKERS,
+            per_worker=Config.CONCURRENT_PER_WORKER
+        )
+        worker.run()
+
 
 if __name__ == '__main__':
     app = ChSSHKracker()

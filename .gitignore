@@ -15,13 +15,8 @@ venv/
 # New Version of Script Directorys
 data/
 log/
-ui/
-utils/
 tests/
-core/
-cli/
 lib/
-tests/
 # Tests Files
 TODO.txt
 ips.txt
@@ -29,3 +24,4 @@ passwd.txt
 users.txt
 
 ssh_advanced.py
+ssh.py

@@ -3,27 +3,26 @@
 
 import os
 import time
-import threading
 
 from colorama import Fore, init
+init(autoreset=True)
 
+from core.stats import Stats, _stats_lock
 from core.config import (
-    BRUTE_FORCE_STOP_EVENT, 
-    globalConfig,
-    FILES_PATH,
-    STATS,
-    __version__
+    _stop_event, 
+    _start_time_monotonic,
+    __version__,
+    Config
 )
 
-from utils.utils import utils
-from ui.table import Table, Theme
+# from utils.utils import utils
+# from ui.table import Table, Theme
 
-init(autoreset=True)
 
 
 class Banners:
     @staticmethod
-    def MainBanner(margin_left:int = None) -> str:
+    def MainBanner(margin_left: int = 2) -> str:
         margin_left = margin_left if margin_left is not None else 0
         margin_left_space = ' ' * margin_left
         return f'''
@@ -36,7 +35,7 @@ class Banners:
     '''
 
     @staticmethod
-    def MiniBanner(margin_left:int = None) -> str:
+    def MiniBanner(margin_left: int = 2) -> str:
         margin_left = margin_left if margin_left is not None else 0
         margin_left_space = ' ' * margin_left
         return f'''
@@ -45,25 +44,25 @@ class Banners:
 {(margin_left_space)}░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀░▀░▀░▀░▀░▀░▀░▀░▀▀▀░▀░▀░▀▀▀░▀░▀
     '''
 
-class BannerStat:
+
+class BannerStats:
     def __init__(self, total_tasks: int):
         self.total_tasks = total_tasks
-        self.theme = Theme(Fore.WHITE, Fore.CYAN)
-        self.targets = os.path.basename(FILES_PATH.IP_FILE)
-        self.timeout = globalConfig.TIMEOUT_SECS
-        self.max_worker = globalConfig.MAX_WORKERS
-        self.per_worker = globalConfig.CONCURRENT_PER_WORKER
-        self._stats_lock = threading.Lock()
+        # self.theme = Theme(Fore.WHITE, Fore.CYAN)
+        self.targets = os.path.basename(Config.IP_FILE)
+        self.timeout = Config.TIMEOUT
+        self.max_worker = Config.MAX_WORKERS
+        self.per_worker = Config.CONCURRENT_PER_WORKER
 
     def run(self):
-        while not BRUTE_FORCE_STOP_EVENT.is_set():
-            table = Table(self.theme, parent_border=4)
-            with self._stats_lock:
-                goods = STATS.GOODS
-                errors = STATS.ERRORS
-                honeypots = STATS.HONEYPOTS
+        while not _stop_event.is_set():
+            # table = Table(self.theme, parent_border=4)
+            with _stats_lock:
+                goods = Stats.Goods.get()
+                errors = Stats.Errors.get()
+                honeypots = Stats.Honeypots.get()
             total_connections = goods + errors + honeypots
-            elapsed = max(0.001, time.perf_counter() - globalConfig.START_TIME_MONOTONIC)
+            elapsed = max(0.001, time.perf_counter() - _start_time_monotonic)
             cps = total_connections / elapsed
             remaining = max(0.0, (self.total_tasks - total_connections) /
                 cps) if cps > 0 else 0.0
@@ -102,7 +101,3 @@ class BannerStat:
             #                 "Licence CGBL (Charon General Black Licence)"])
 
             # print(table.display())
-
-            if (total_connections == self.total_tasks):
-                BRUTE_FORCE_STOP_EVENT.set()
-                break

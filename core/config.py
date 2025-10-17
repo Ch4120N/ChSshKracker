@@ -1,59 +1,40 @@
-# -*- UTF-8 -*-
+# -*- coding: utf-8 -*-
 # core/config.py
 
 import re
-from threading import Event, Lock
+import threading
 
 __version__ = '1.3.0'
-SCRIPT_NAME = 'ChSSHKracker' # Script name
+SCRIPT_NAME = 'ChSSHKracker'  # Script name
 SCRIPT_DESCRIPTION = (
     'A powerful, high-performance SSH brute force tool written in Python 3.9 with enhanced multi-layer worker architecture'
     ', advanced honeypot detection, real-time statistics, and comprehensive system reconnaissance capabilities'
-) # Script description
+)  # Script description
 
-SUMMARY = {
-    'IP FILE' : None,
-    'USE COMBO' : None,
-    'COMBO FILE' : None,
-    'USERNAME FILE' : None,
-    'PASSWORD FILE' : None,
-    'TIMEOUT (S)' : 0,
-    'MAX WORKERS' : 0,
-    'PER WORKER' : 0
-}
-
-
-BRUTE_FORCE_STOP_EVENT = Event()
 ANSI_ESCAPE = re.compile(r'\x1b\[[0-9;]*m')
 
-class globalConfig:
-    TOTAL_TASKS: int = 0
-    TOTAL_IPS: int = 0
-    TIMEOUT_SECS: int             = 5
-    CONCURRENT_PER_WORKER: int    = 25 # Recommended
-    MAX_WORKERS: int              = 25
-    START_TIME_MONOTONIC: float   = 0.0
+_total_tasks: int = 0
+_stop_event = threading.Event()
+_success_map_lock = threading.Lock()
+_success_ip_port: set[str] = set()
+
+_start_time_monotonic: float = 0.0
 
 
-class FILES_PATH:
-    IP_FILE: str                 = None
-    USERNAME_FILE: str           = None
-    PASSWORD_FILE: str           = None
-    COMBO_FILE: str              = None
+class Config:
+    IP_FILE: str = ''
+    USERNAME_FILE: str = ''
+    PASSWORD_FILE: str = ''
+    COMBO_FILE: str = ''
+    USE_COMBO: bool = False
+    TIMEOUT: int = 5
+    MAX_WORKERS: int = 25
+    CONCURRENT_PER_WORKER: int = 25
 
 
-class STATS:
-    GOODS:int                    = 0
-    ERRORS:int                   = 0
-    HONEYPOTS:int                = 0
-    STATS_LOCK                   = Lock()
-    SUCCESS_MAP_LOCK             = Lock()
-    SUCCESSFUL_IP_PORT: set[str] = set()
-
-class DEFAULT_PATH:
-    DEBUG_FILE: str               = 'log/debug.log'
-    EXCEPTIONS_FILE: str          = 'log/exceptions.log'
-    COMBO_FILE: str               = 'data/COMBO.TXT'
-    GOODS_FILE: str               = 'data/SSH-GOODS.TXT'
-    GOODS_DETAILED_FILE_PATH: str = 'data/SSH-DETAILS.TXT'
-    HONEYPOTS_FILE: str           = 'data/HONEYPOTS.TXT'
+class FILE_PATH:
+    DEBUG_FILE: str = 'data/debug.log'
+    COMBO_FILE: str = 'data/COMBO.TXT'
+    GOODS_FILE: str = 'data/SSH-GOODS.TXT'
+    DETAILED_FILE: str = 'data/SSH-DETAILES.TXT'
+    HONEYPOT_FILE: str = 'data/HONEYPOTS.TXT'

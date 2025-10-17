@@ -1,13 +1,16 @@
-# -*- UTF-8 -*-
+# -*- coding: utf-8 -*-
 # core/recon.py
 
 import re
-from typing import List
+from typing import Dict, Iterable, List, Optional, Tuple
+
 from core.models import ServerInfo
+from core.ssh_client import SSH
 
 
-class Recon:
-    def gather_system_info(self, ssh, server: ServerInfo) -> None:
+class ReconSystem:
+    def gather_system_info(self, ssh: SSH, server: ServerInfo) -> None:
+        """Execute a suite of commands and populate ServerInfo."""
         commands = {
             "hostname": "hostname",
             "uname": "uname -a",
@@ -33,6 +36,7 @@ class Recon:
                 server.ssh_version = out.strip()
 
         server.open_ports = self.scan_local_ports(server.commands.get("netstat", ""))
+
 
     def scan_local_ports(self, netstat_output: str) -> List[str]:
         ports: List[str] = []

@@ -1,13 +1,13 @@
-# -*- UTF-8 -*-
-# utils/io_utils.py
+# -*- coding: utf-8 -*-
+# utils/io_utility.py
 
 import os
-from pathlib import Path
 from typing import List, Tuple
 
 from ui.decorators import MsgDCR
 
-class IO:
+
+class FileManager:
     @staticmethod
     def read_lines(path: str) -> List[str]:
         """Read non-empty, stripped lines from a file."""
@@ -33,8 +33,8 @@ class IO:
     @staticmethod
     def create_combo_file(user_file: str, pass_file: str, combo_path: str) -> None:
         """Generate username:password combinations and persist to combo file."""
-        usernames = IO.read_lines(user_file)
-        passwords = IO.read_lines(pass_file)
+        usernames = FileManager.read_lines(user_file)
+        passwords = FileManager.read_lines(pass_file)
         try:
             combo_dir = os.path.dirname(combo_path)
             if (not os.path.exists(combo_path)):
@@ -47,9 +47,9 @@ class IO:
             MsgDCR.FailureMessage(f"Failed to create combo file: {combo_path}")
 
     @staticmethod
-    def parse_combo(path: Path) -> List[Tuple[str, str]]:
+    def parse_combo(path: str) -> List[Tuple[str, str]]:
         """Parse combo file of username:password into tuples."""
-        lines = IO.read_lines(path)
+        lines = FileManager.read_lines(path)
         combos: List[Tuple[str, str]] = []
         for line in lines:
             if ":" in line:
@@ -58,9 +58,9 @@ class IO:
         return combos
 
     @staticmethod
-    def parse_targets(path: Path) -> List[Tuple[str, str]]:
+    def parse_targets(path: str) -> List[Tuple[str, str]]:
         """Parse targets file of ip:port into tuples. Missing port defaults to 22."""
-        lines = IO.read_lines(path)
+        lines = FileManager.read_lines(path)
         targets: List[Tuple[str, str]] = []
         for line in lines:
             if ":" in line:

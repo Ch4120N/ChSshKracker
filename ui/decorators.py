@@ -1,4 +1,4 @@
-# -*- UTF-8 -*-
+# -*- coding: utf-8 -*-
 # ui/decorators.py
 
 from colorama import Fore, Style, init

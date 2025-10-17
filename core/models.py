@@ -1,9 +1,8 @@
-# -*- UTF-8 -*-
+# -*- coding: utf-8 -*-
 # core/models.py
 
-from dataclasses import dataclass, field
 from typing import Dict, List
-
+from dataclasses import dataclass, field
 
 @dataclass
 class SSHTask:
@@ -11,14 +10,14 @@ class SSHTask:
     port: str
     username: str
     password: str
-    timeout: int
+
 
 @dataclass
 class ServerInfo:
-    ip: str
-    port: str
-    username: str
-    password: str
+    ip: str = ''
+    port: str = ''
+    username: str = ''
+    password: str = ''
     is_honeypot: bool = False
     honeypot_score: int = 0
     ssh_version: str = ""

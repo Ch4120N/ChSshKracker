@@ -1,13 +1,13 @@
-# -*- UTF-8 -*-
+# -*- coding: utf-8 -*-
 # core/honeypot.py
 
 import time
 
+from core.ssh_client import SSH
 from core.models import ServerInfo, HoneypotDetector
 
-
 class HoneypotEngine:
-    def detect(self, ssh, server: ServerInfo, detector: HoneypotDetector) -> bool:
+    def detect(self, ssh: SSH, server: ServerInfo, detector: HoneypotDetector) -> bool:
         score = 0
         score += self.analyze_command_output(server, detector)
         if detector.time_analysis:
@@ -59,7 +59,7 @@ class HoneypotEngine:
             score += 1
         return score
 
-    def analyze_network(self, ssh) -> int:
+    def analyze_network(self, ssh: SSH) -> int:
         score = 0
         network_cfg = ssh.run(
             "ls -la /etc/network/interfaces /etc/sysconfig/network-scripts/ /etc/netplan/ 2>/dev/null | head -5").lower()
@@ -74,7 +74,7 @@ class HoneypotEngine:
             score += 1
         return score
 
-    def behavioral_tests(self, ssh, server: ServerInfo) -> int:
+    def behavioral_tests(self, ssh: SSH, server: ServerInfo) -> int:
         score = 0
         tmp_name = f"/tmp/test_{int(time.time())}"
         create_out = ssh.run(f"echo 'test' > {tmp_name}")
@@ -103,7 +103,7 @@ class HoneypotEngine:
         return score
 
 
-    def advanced_honeypot_tests(self, ssh) -> int:
+    def advanced_honeypot_tests(self, ssh: SSH) -> int:
         score = 0
         cpu = ssh.run("cat /proc/cpuinfo | grep 'model name' | head -1").lower()
         if "qemu" in cpu or "virtual" in cpu:
@@ -129,7 +129,7 @@ class HoneypotEngine:
         return score
 
 
-    def performance_tests(self, ssh) -> int:
+    def performance_tests(self, ssh: SSH) -> int:
         score = 0
         io_test = ssh.run("time dd if=/dev/zero of=/tmp/test bs=1M count=10 2>&1")
         if "command not found" in io_test:
@@ -141,7 +141,7 @@ class HoneypotEngine:
         return score
 
 
-    def detect_anomalies(server: ServerInfo, fix = None) -> int:
+    def detect_anomalies(self, server: ServerInfo) -> int:
         score = 0
         if server.hostname:
             suspicious = [

@@ -21,8 +21,8 @@ class SharpBox:
     - Export as plain text (no ANSI escapes) or save to file
     """
 
-    def __init__(self, title: str, version: str = '', description: str = '', usage: str = '', options: list = None, examples: list = None,
-                 width: int = 94, color: bool = True, margin_left: int = None):
+    def __init__(self, title: str, version: str = '', description: str = '', usage: str = '', options: list = [], examples: list = [],
+                 width: int = 94, color: bool = True, margin_left: int = 2):
         """
         - title: main title string (e.g. 'ChSSHKracker - Ch4120N SSH Kracker')
         - version: version suffix to append to title (e.g. 'v1.3.0')
@@ -115,7 +115,7 @@ class SharpBox:
         # wrap without breaking words; returns list of strings
         return textwrap.wrap(text, width=width) or ['']
 
-    def render(self, color: bool = None) -> str:
+    def render(self, color: bool = False) -> str:
         """Return the banner as a single string. If color is None, use instance setting."""
         do_color = self.color if color is None else bool(color)
         # recompute width in case terminal changed
