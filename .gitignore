@@ -23,5 +23,6 @@ ips.txt
 passwd.txt
 users.txt
 scanned.txt
+CIDR.txt
 ssh_advanced.py
 ssh.py
