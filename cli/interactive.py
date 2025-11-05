@@ -375,4 +375,30 @@ class InteractiveUI:
 
         Config.PASSWORD_FILE = self.pass_path
     
+    def get_timeout(self):
+        while not self.REQUIRED_TIMEOUT_EVENT.is_set():
+            utils.clear_screen()
+            self._print_banner()
+            self.summary_obj.render(self.get_summary_obj.get())
+
+            self.timeout_prompt = self.inputs.input_get_timeout()
+
+            if (not self.timeout_prompt):
+                self.timeout_prompt = Config.TIMEOUT
+                self.REQUIRED_TIMEOUT_EVENT.set()
+            elif (
+                (not self.timeout_prompt.isdigit()) 
+                or 
+                (int(self.timeout_prompt) < 1)
+                ):
+                MsgDCR.FailureMessage('Please enter valid positive integer for timeout')
+                self._continue()
+                continue
+            else:
+                self.REQUIRED_TIMEOUT_EVENT.set()
+
+        if (self.timeout_prompt):
+            Config.TIMEOUT = int(self.timeout_prompt)
+    
+
     
