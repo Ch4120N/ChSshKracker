@@ -400,5 +400,27 @@ class InteractiveUI:
         if (self.timeout_prompt):
             Config.TIMEOUT = int(self.timeout_prompt)
     
+    def get_max_workers(self):
+        while not self.REQUIRED_MAX_WORKERS_EVENT.is_set():
+            utils.clear_screen()
+            self._print_banner()
+            self.summary_obj.render(self.get_summary_obj.get())
 
-    
+            self.max_workers_prompt = self.inputs.input_get_max_workers()
+
+            if (not self.max_workers_prompt):
+                self.max_workers_prompt = Config.MAX_WORKERS
+                self.REQUIRED_MAX_WORKERS_EVENT.set()
+            elif (
+                (not self.max_workers_prompt.isdigit()) 
+                or 
+                (int(self.max_workers_prompt) < 1)
+                ):
+                MsgDCR.FailureMessage('Please enter valid positive integer for max workers')
+                self._continue()
+                continue
+            else:
+                self.REQUIRED_MAX_WORKERS_EVENT.set()
+
+        if (self.max_workers_prompt):
+            Config.MAX_WORKERS = int(self.max_workers_prompt)
