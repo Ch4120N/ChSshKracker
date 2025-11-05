@@ -206,4 +206,22 @@ class InteractiveUI:
         self.REQUIRED_MAX_WORKERS_EVENT.clear()
         self.REQUIRED_PER_WORKERS_EVENT.clear()
         self.CONFIRM_CONFIGURATION.clear()
+
+    def _clear_defaults(self):
+        Config.TIMEOUT = 5
+        Config.MAX_WORKERS = 25
+        Config.CONCURRENT_PER_WORKER = 25
+    
+    def _clear_file_paths(self):
+        Config.IP_FILE = ''
+        Config.USERNAME_FILE = ''
+        Config.PASSWORD_FILE = ''
+        Config.COMBO_FILE = ''
+    
+    def _print_banner(self):
+        print(Fore.LIGHTRED_EX + Banners.MainBanner(margin_left=2) + Fore.RESET, '\n')
+
+    def _continue(self):
+        self.inputs.input_continue()
+    
     
