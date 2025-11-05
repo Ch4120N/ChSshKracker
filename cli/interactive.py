@@ -172,3 +172,24 @@ class Inputs:
         return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message).lower()
 
 
+class InteractiveUI:
+    def __init__(self):
+        self.summary_obj = SummaryRenderer(
+            title='Configuration Summary', 
+            space=5, 
+            global_margin_left_spaces=2, 
+            max_width=80
+        )
+        self.inputs = Inputs()
+
+        # Requirements Events
+        self.MAIN_EVENT = Event()
+        self.REQUIRED_IP_EVENT = Event()
+        self.USE_COMBO_CONFIRMATION = Event()
+        self.REQUIRED_COMBO_FILE_EVENT = Event()
+        self.REQUIRED_USER_FILE_EVENT = Event()
+        self.REQUIRED_PASS_FILE_EVENT = Event()
+        self.REQUIRED_TIMEOUT_EVENT = Event()
+        self.REQUIRED_MAX_WORKERS_EVENT = Event()
+        self.REQUIRED_PER_WORKERS_EVENT = Event()
+        self.CONFIRM_CONFIGURATION = Event()
