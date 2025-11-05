@@ -320,4 +320,30 @@ class InteractiveUI:
 
         Config.COMBO_FILE = self.combo_path
     
-    
+    def get_user_file(self):
+        while not self.REQUIRED_USER_FILE_EVENT.is_set():
+            utils.clear_screen()
+            self._print_banner()
+            self.summary_obj.render(self.get_summary_obj.get())
+
+            user_list = self.inputs.input_get_user_file()
+            self.user_path = os.path.realpath(user_list)
+
+            if (not user_list):
+                MsgDCR.FailureMessage('Username list is required if your not using a combo list')
+                self._continue()
+                continue
+
+            elif (
+                (not os.path.isfile(self.user_path)) 
+                or 
+                (not os.path.exists(self.user_path))
+                ):
+                MsgDCR.FailureMessage(f'Username list does not exist: {self.user_path}')
+                self._continue()
+                continue
+            else:
+                self.REQUIRED_USER_FILE_EVENT.set()
+
+        Config.USERNAME_FILE = self.user_path
+
