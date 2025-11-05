@@ -259,7 +259,6 @@ class InteractiveUI:
                 continue
             else:
                 self.REQUIRED_IP_EVENT.set()
-                break
 
         Config.IP_FILE = self.ip_path
 
@@ -280,7 +279,6 @@ class InteractiveUI:
                 Config.USE_COMBO = True
                 self.get_combo_file()
                 self.USE_COMBO_CONFIRMATION.set()
-                break
             
             elif (use_combo in ['n', 'no']):
                 Config.USE_COMBO = False
@@ -289,11 +287,37 @@ class InteractiveUI:
                 self.get_user_file()
                 self.get_pass_file()
                 self.USE_COMBO_CONFIRMATION.set()
-                break
             else:
                 MsgDCR.FailureMessage('Something went wrong. Please try again!')
                 self._continue()
                 continue
     
+
+    def get_combo_file(self):
+        while not self.REQUIRED_COMBO_FILE_EVENT.is_set():
+            utils.clear_screen()
+            self._print_banner()
+            self.summary_obj.render(self.get_summary_obj.get())
+
+            combo_list = self.inputs.input_get_combo_file()
+            self.combo_path = os.path.realpath(combo_list)
+
+            if (not combo_list):
+                MsgDCR.FailureMessage('Combo list path is required if you choosing to use a combo list')
+                self._continue()
+                continue
+
+            elif (
+                (not os.path.isfile(self.combo_path)) 
+                or 
+                (not os.path.exists(self.combo_path))
+                ):
+                MsgDCR.FailureMessage(f'Combo list does not exist: {self.combo_path}')
+                self._continue()
+                continue
+            else:
+                self.REQUIRED_COMBO_FILE_EVENT.set()
+
+        Config.COMBO_FILE = self.combo_path
     
-        
+    
