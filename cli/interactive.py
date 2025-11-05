@@ -23,7 +23,7 @@ from core.config import (
 
 from ui.banner import Banners
 from ui.decorators import MsgDCR
-from ui.summary_render import SummaryRenderer
+from ui.summary_render import SummaryRenderer, GetSummary
 from cli.path_completer import PathCompleter
 
 
@@ -180,6 +180,7 @@ class InteractiveUI:
             global_margin_left_spaces=2, 
             max_width=80
         )
+        self.get_summary_obj = GetSummary()
         self.inputs = Inputs()
 
         # Requirements Events
@@ -193,3 +194,16 @@ class InteractiveUI:
         self.REQUIRED_MAX_WORKERS_EVENT = Event()
         self.REQUIRED_PER_WORKERS_EVENT = Event()
         self.CONFIRM_CONFIGURATION = Event()
+
+    def _clear_events(self):
+        self.MAIN_EVENT.clear()
+        self.REQUIRED_IP_EVENT.clear()
+        self.USE_COMBO_CONFIRMATION.clear()
+        self.REQUIRED_COMBO_FILE_EVENT.clear()
+        self.REQUIRED_USER_FILE_EVENT.clear()
+        self.REQUIRED_PASS_FILE_EVENT.clear()
+        self.REQUIRED_TIMEOUT_EVENT.clear()
+        self.REQUIRED_MAX_WORKERS_EVENT.clear()
+        self.REQUIRED_PER_WORKERS_EVENT.clear()
+        self.CONFIRM_CONFIGURATION.clear()
+    
