@@ -449,3 +449,32 @@ class InteractiveUI:
 
         if (self.per_worker_prompt):
             Config.CONCURRENT_PER_WORKER = int(self.per_worker_prompt)
+    
+    def get_confirm_configuration(self):
+        self.CONFIRM_CONFIGURATION.clear()
+        while not self.CONFIRM_CONFIGURATION.is_set():
+            utils.clear_screen()
+            self._print_banner()
+            self.summary_obj.render(self.get_summary_obj.get())
+
+            confirm = self.inputs.input_confirm_configurations()
+
+            if (not confirm) or (not confirm in ['y', 'yes', 'n', 'no']):
+                MsgDCR.FailureMessage('Please enter valid input: y/n ')
+                self._continue()
+                continue
+        
+            elif (confirm in ['y', 'yes']):
+                self._clear_events()
+                self._clear_defaults()
+                self._clear_file_paths()
+                self.CONFIRM_CONFIGURATION.set()
+            
+            elif (confirm in ['n', 'no']):
+                self.MAIN_EVENT.set()
+                self.CONFIRM_CONFIGURATION.set()
+            
+            else:
+                MsgDCR.FailureMessage('Something went wrong. Please try again!')
+                self._continue()
+                continue
