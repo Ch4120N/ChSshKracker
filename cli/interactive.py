@@ -224,4 +224,12 @@ class InteractiveUI:
     def _continue(self):
         self.inputs.input_continue()
     
+    def run(self):
+        while not self.MAIN_EVENT.is_set():
+            self.get_ips()
+            self.get_combos_or_userpass()
+            self.get_timeout()
+            self.get_max_workers()
+            self.get_per_workers()
+            self.get_confirm_configuration()
     
