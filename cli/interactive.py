@@ -347,3 +347,32 @@ class InteractiveUI:
 
         Config.USERNAME_FILE = self.user_path
 
+
+    def get_pass_file(self):
+        while not self.REQUIRED_PASS_FILE_EVENT.is_set():
+            utils.clear_screen()
+            self._print_banner()
+            self.summary_obj.render(self.get_summary_obj.get())
+
+            pass_list = self.inputs.input_get_password_file()
+            self.pass_path = os.path.realpath(pass_list)
+
+            if (not pass_list):
+                MsgDCR.FailureMessage('Password list is required if your not using a combo list')
+                self._continue()
+                continue
+
+            elif (
+                (not os.path.isfile(self.pass_path)) 
+                or 
+                (not os.path.exists(self.pass_path))
+                ):
+                MsgDCR.FailureMessage(f'Password list does not exist: {self.pass_path}')
+                self._continue()
+                continue
+            else:
+                self.REQUIRED_PASS_FILE_EVENT.set()
+
+        Config.PASSWORD_FILE = self.pass_path
+    
+    
