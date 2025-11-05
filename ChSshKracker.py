@@ -38,7 +38,7 @@ def handle_SIGINT(frm, func):
 
 signal.signal(signal.SIGINT, handle_SIGINT)
 
-sys.stderr = open(os.devnull, 'w')
+# sys.stderr = open(os.devnull, 'w')
 
 class ChSSHKracker:
     def __init__(self) -> None:
@@ -62,69 +62,75 @@ class ChSSHKracker:
         per_worker = args.per_worker
         interactive_flag = args.interactive
 
-        if (ip_list):
-            if ((not os.path.isfile(ip_list)) or (not os.path.exists(ip_list))):
-                MsgDCR.FailureMessage(f'IP list does not exist: {ip_list}')
-                sys.exit(2)
-        else:
-            print(self.parser_obj.render_help())
-        
-        Config.IP_FILE = os.path.realpath(ip_list)
-    
-        if (combo_list):
-            if ((not os.path.isfile(combo_list)) or (not os.path.exists(combo_list))):
-                MsgDCR.FailureMessage(f'Combo list does not exist: {combo_list}')
-                sys.exit(2)
-            combo_list_path = os.path.realpath(combo_list)
-            try:
-                self.parse_combos = FileManager.parse_combo(combo_list_path)
-            except Exception:
-                MsgDCR.FailureMessage('Error on loading combo list')
-                sys.exit(2)
-            Config.USE_COMBO = True
-            Config.COMBO_FILE = combo_list_path
-        
-        else:
-            Config.USE_COMBO = False
-            Config.COMBO_FILE = os.path.realpath(FILE_PATH.COMBO_FILE)
-
-            if (user_list):
-                if ((not os.path.isfile(user_list)) or (not os.path.exists(user_list))):
-                    MsgDCR.FailureMessage(f'Username list does not exist: {user_list}')
+        if (not interactive_flag):
+            if (ip_list):
+                if ((not os.path.isfile(ip_list)) or (not os.path.exists(ip_list))):
+                    MsgDCR.FailureMessage(f'IP list does not exist: {ip_list}')
                     sys.exit(2)
-            else:
-                MsgDCR.FailureMessage('Username list is required if your not using combo file')
-                sys.exit(1)
 
-            if (password_list):
-                if ((not os.path.isfile(password_list)) or (not os.path.exists(password_list))):
-                    MsgDCR.FailureMessage(f'Password list does not exist: {password_list}')
-                    sys.exit(2)
+                Config.IP_FILE = os.path.realpath(ip_list)
             else:
-                MsgDCR.FailureMessage('Password list is required if your not using combo file')
-                sys.exit(1)
+                print(self.parser_obj.render_help())
+                sys.exit(2)
+        
+            if (combo_list):
+                if ((not os.path.isfile(combo_list)) or (not os.path.exists(combo_list))):
+                    MsgDCR.FailureMessage(f'Combo list does not exist: {combo_list}')
+                    sys.exit(2)
+                combo_list_path = os.path.realpath(combo_list)
+                try:
+                    self.parse_combos = FileManager.parse_combo(combo_list_path)
+                except Exception:
+                    MsgDCR.FailureMessage('Error on loading combo list')
+                    sys.exit(2)
+                Config.USE_COMBO = True
+                Config.COMBO_FILE = combo_list_path
             
-            Config.USERNAME_FILE = os.path.realpath(user_list)
-            Config.PASSWORD_FILE = os.path.realpath(password_list)
+            else:
+                Config.USE_COMBO = False
+                Config.COMBO_FILE = os.path.realpath(FILE_PATH.COMBO_FILE)
+
+                if (user_list):
+                    if ((not os.path.isfile(user_list)) or (not os.path.exists(user_list))):
+                        MsgDCR.FailureMessage(f'Username list does not exist: {user_list}')
+                        sys.exit(2)
+                    
+                    Config.USERNAME_FILE = os.path.realpath(user_list)
+                else:
+                    MsgDCR.FailureMessage('Username list is required if your not using combo file')
+                    sys.exit(1)
+
+                if (password_list):
+                    if ((not os.path.isfile(password_list)) or (not os.path.exists(password_list))):
+                        MsgDCR.FailureMessage(f'Password list does not exist: {password_list}')
+                        sys.exit(2)
+                    Config.PASSWORD_FILE = os.path.realpath(password_list)
+                else:
+                    MsgDCR.FailureMessage('Password list is required if your not using combo file')
+                    sys.exit(1)
+            
+            if (timeout):
+                if (int(timeout) < 1):
+                    MsgDCR.FailureMessage('Please enter valid positive integer for timeout')
+                    sys.exit(2)
+                Config.TIMEOUT = timeout
+            
+            if (max_workers):
+                if (int(max_workers) < 1):
+                    MsgDCR.FailureMessage('Please enter valid positive integer for workers')
+                    sys.exit(2)
+                Config.MAX_WORKERS = max_workers
+            
+            if (per_worker):
+                if (int(per_worker) < 1):
+                    MsgDCR.FailureMessage('Please enter valid positive integer for per worker')
+                    sys.exit(2)
+                Config.CONCURRENT_PER_WORKER = per_worker
         
-        if (timeout):
-            if (int(timeout) < 1):
-                MsgDCR.FailureMessage('Please enter valid positive integer for timeout')
-                sys.exit(2)
-            Config.TIMEOUT = timeout
-        
-        if (max_workers):
-            if (int(max_workers) < 1):
-                MsgDCR.FailureMessage('Please enter valid positive integer for workers')
-                sys.exit(2)
-            Config.MAX_WORKERS = max_workers
-        
-        if (per_worker):
-            if (int(per_worker) < 1):
-                MsgDCR.FailureMessage('Please enter valid positive integer for per worker')
-                sys.exit(2)
-            Config.CONCURRENT_PER_WORKER = per_worker
-        
+        else:
+            MsgDCR.InfoMessage('Interactive mode has been detected!')
+            sys.exit(2)
+            
         if not Config.USE_COMBO:
             try:
                 FileManager.create_combo_file(Config.USERNAME_FILE, Config.PASSWORD_FILE, Config.COMBO_FILE)
