@@ -29,6 +29,8 @@ from utils.file_manager import FileManager
 from ui.decorators import MsgDCR
 from ui.summary_render import SummaryRenderer, GetSummary
 from cli.parser import Parser
+from cli.interactive import InteractiveUI
+
 
 def handle_SIGINT(frm, func):
     print()
@@ -49,6 +51,7 @@ class ChSSHKracker:
                     max_width=80
         )
         self.parser_obj = Parser()
+        self.interactive_obj = InteractiveUI()
 
     def run(self):
         args = self.parser_obj.build_parser()
@@ -129,6 +132,7 @@ class ChSSHKracker:
         
         else:
             MsgDCR.InfoMessage('Interactive mode has been detected!')
+            self.interactive_obj.run()
             sys.exit(2)
             
         if not Config.USE_COMBO:
