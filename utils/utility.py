@@ -9,7 +9,7 @@ class Utility:
         self.clear = 'cls' if os.name == 'nt' else 'clear'
      
     def clear_screen(self):
-        os.system('clear')
+        os.system(self.clear)
     
     def format_duration(self, seconds: float) -> str:
         seconds = max(0.0, seconds)

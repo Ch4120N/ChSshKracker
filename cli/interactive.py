@@ -24,6 +24,7 @@ from core.config import (
 from ui.banner import Banners
 from ui.decorators import MsgDCR
 from ui.summary_render import SummaryRenderer, GetSummary
+from utils.utility import utility as utils
 from cli.path_completer import PathCompleter
 
 
@@ -233,3 +234,30 @@ class InteractiveUI:
             self.get_per_workers()
             self.get_confirm_configuration()
     
+    def get_ips(self):
+        while not self.REQUIRED_IP_EVENT.is_set():
+            utils.clear_screen()
+            self._print_banner()
+
+            ip_list = self.inputs.input_get_ip_file()
+            ip_path = os.path.realpath(ip_list)
+
+            if (not ip_list):
+                MsgDCR.FailureMessage("IP list is required!")
+                self._continue()
+                continue
+        
+            elif (
+                (not os.path.isfile(ip_path)) 
+                or 
+                (not os.path.exists(ip_path))
+                ):
+                MsgDCR.FailureMessage(f'IP list does not exist: {ip_path}')
+                self._continue()
+                continue
+            else:
+                self.REQUIRED_IP_EVENT.set()
+        
+        SUMMARY['IP FILE'] = ip_path
+        FILES_PATH.IP_FILE = ip_path
+        
