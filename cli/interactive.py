@@ -2,15 +2,6 @@
 # cli/interactive.py
 
 from __future__ import annotations
-from cli.path_completer import PathCompleter
-from utils.utility import utility as utils
-from ui.summary_render import SummaryRenderer, GetSummary
-from ui.decorators import MsgDCR
-from ui.banner import Banners
-from core.config import (
-    _stop_event,
-    Config
-)
 
 import os
 import signal
@@ -24,6 +15,18 @@ from prompt_toolkit.shortcuts.prompt import CompleteStyle
 from colorama import Fore, init
 
 init(autoreset=True)
+
+from core.config import (
+    _stop_event,
+    Config,
+    FILE_PATH
+)
+
+from cli.path_completer import PathCompleter
+from utils.utility import utility as utils
+from ui.summary_render import SummaryRenderer, GetSummary
+from ui.decorators import MsgDCR
+from ui.banner import Banners
 
 
 def handle_SIGINT(frm, func):
@@ -259,3 +262,38 @@ class InteractiveUI:
                 break
 
         Config.IP_FILE = self.ip_path
+
+    def get_combos_or_userpass(self):
+        while not self.USE_COMBO_CONFIRMATION.is_set():
+            utils.clear_screen()
+            self._print_banner()
+            self.summary_obj.render(self.get_summary_obj.get())
+
+            use_combo = self.inputs.input_continue_with_combos()
+
+            if (not use_combo) or (not use_combo in ['y', 'n']):
+                MsgDCR.FailureMessage('Please enter valid input: y/n ')
+                self._continue()
+                continue
+        
+            elif (use_combo in ['y', 'yes']):
+                Config.USE_COMBO = True
+                self.get_combo_file()
+                self.USE_COMBO_CONFIRMATION.set()
+                break
+            
+            elif (use_combo in ['n', 'no']):
+                Config.USE_COMBO = False
+                Config.COMBO_FILE = FILE_PATH.COMBO_FILE
+
+                self.get_user_file()
+                self.get_pass_file()
+                self.USE_COMBO_CONFIRMATION.set()
+                break
+            else:
+                MsgDCR.FailureMessage('Something went wrong. Please try again!')
+                self._continue()
+                continue
+    
+    
+        
