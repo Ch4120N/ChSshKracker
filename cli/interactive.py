@@ -1,6 +1,8 @@
 # -*- UTF-8 -*-
 # cli/interactive.py
 
+from __future__ import annotations
+
 import os
 import signal
 from threading import Event
@@ -14,5 +16,159 @@ from colorama import Fore, init
 
 init(autoreset=True)
 
+from core.config import (
+    _stop_event,
+    Config
+)
+
+from ui.banner import Banners
+from ui.decorators import MsgDCR
+from ui.summary_render import SummaryRenderer
+from cli.path_completer import PathCompleter
+
+
+def handle_SIGINT(frm, func):
+    print()
+    MsgDCR.FailureMessage('Program Interrupted By User!')
+    _stop_event.set()
+    os.kill(os.getpid(), signal.SIGTERM)
+
+
+class Inputs:
+    def __init__(self):
+        self.INPUT_DECORATOR = [
+            ('class:brackets', '\n [ '),
+            ('class:arrow', '>'),
+            ('class:brackets', ' ] ')
+        ]
+    
+    def build_input_styles(self, prompt_color: str = 'white bold') -> Style:
+        return Style.from_dict({
+            'prompt': 'ansired bold',
+            'brackets': 'magenta bold',
+            'bluebrackets' : 'blue bold',
+            'arrow': 'white bold',
+            'text': prompt_color,
+            'key': 'red bold',
+            'confirmcolor': 'cyan bold'
+        })
+
+    def input_with_prompt(self, prompt_message, completer_on: bool = False, prompt_color: str = 'white bold'):
+        try:
+            return prompt(prompt_message,
+                        completer=PathCompleter() if completer_on else None,
+                        # complete_style=CompleteStyle.READLINE_LIKE, # Optional
+                        style=self.build_input_styles(prompt_color)
+                        ).strip()
+        except (KeyboardInterrupt, EOFError):
+            handle_SIGINT(1, None)
+        except RuntimeError:
+            return ''
+
+    def input_continue(self) -> None:
+        prompt_message = [
+            ('class:text', 'Press '),
+            ('class:bluebrackets', '['),
+            ('class:key', 'ENTER'),
+            ('class:bluebrackets', ']'),
+            ('class:text', ' key to continue /Or Press '),
+            ('class:bluebrackets', '['),
+            ('class:key', 'CTRL+C'),
+            ('class:bluebrackets', ']'),
+            ('class:text', ' hotkey to exit ...'),
+        ]
+        self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
+
+    def input_start_attack(self) -> None:
+        prompt_message = [
+            ('class:text', 'Press '),
+            ('class:bluebrackets', '['),
+            ('class:key', 'ENTER'),
+            ('class:bluebrackets', ']'),
+            ('class:text', ' key to start brute forcing /Or Press '),
+            ('class:bluebrackets', '['),
+            ('class:key', 'CTRL+C'),
+            ('class:bluebrackets', ']'),
+            ('class:text', ' hotkey to exit ...'),
+        ]
+        self.input_with_prompt(prompt_message)
+
+    # Interactive Inputs
+
+    def input_get_ip_file(self):
+        prompt_message = [
+            ('class:text', 'Enter the path to the IP list file: ')
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message, completer_on=True)
+    
+    def input_continue_with_combos(self):
+        prompt_message = [
+            ('class:text', 'Do you want to provide a combo file instead of separate user/password lists?'),
+            ('class:bluebrackets', ' ( '),
+            ('class:confirmcolor', 'y/n'),
+            ('class:bluebrackets', ' ) '),
+            ('class:text', ': ')
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message).lower()
+    
+    def input_get_combo_file(self):
+        prompt_message = [
+            ('class:text', 'Enter the path to the generated combo file: ')
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message, completer_on=True)
+    
+    def input_get_user_file(self):
+        prompt_message = [
+            ('class:text', 'Enter the path to the username list file: ')
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message, completer_on=True)
+
+    def input_get_password_file(self):
+        prompt_message = [
+            ('class:text', 'Enter the path to the password list file: ')
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message, completer_on=True)
+
+    def input_get_timeout(self):
+        prompt_message = [
+            ('class:text', 'Enter the connection timeout in seconds'),
+            ('class:bluebrackets', ' ('),
+            ('class:confirmcolor', f'Default: {Config.TIMEOUT}'),
+            ('class:bluebrackets', ') '),
+            ('class:text', ': ')
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
+    
+    def input_get_max_workers(self):
+        prompt_message = [
+            ('class:text', 'Enter the maximum number of workers'),
+            ('class:bluebrackets', ' ('),
+            ('class:confirmcolor', f'Default: {Config.MAX_WORKERS}'),
+            ('class:bluebrackets', ') '),
+            ('class:text', ': ')
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
+    
+    def input_get_per_workers(self):
+        prompt_message = [
+            ('class:text', 'Enter the number of concurrent connections per worker'),
+            ('class:bluebrackets', ' ('),
+            ('class:confirmcolor',
+                f'Default: {Config.CONCURRENT_PER_WORKER}. '),
+            ('class:key', 'Recommended'),
+            ('class:bluebrackets', ') '),
+            ('class:text', ': ')
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message)
+    
+    def input_confirm_configurations(self):
+        prompt_message = [
+            ('class:text', 'Do you want to change any other settings?'),
+            ('class:bluebrackets', ' ( '),
+            ('class:confirmcolor', 'y/n'),
+            ('class:bluebrackets', ' ) '),
+            ('class:text', ': ')
+        ]
+        return self.input_with_prompt(self.INPUT_DECORATOR + prompt_message).lower()
 
 
