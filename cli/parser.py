@@ -33,7 +33,7 @@ class Parser:
         parser.add_argument("-P", "--password-list", type=str,
                             help="Path to passwords file (one per line)", dest="password_list")
         parser.add_argument("-I", "--ip-list", type=str,
-                            help="Path to targets file (ip[:port] per line)", dest="ip_list", required=True)
+                            help="Path to targets file (ip[:port] per line)", dest="ip_list")
         parser.add_argument("-C", "--combo-list", type=str,
                             help="Generated combo file path", dest="combo_list")
         parser.add_argument("-t", "--timeout", type=int, default=Config.TIMEOUT,
