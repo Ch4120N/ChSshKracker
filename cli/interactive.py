@@ -424,3 +424,28 @@ class InteractiveUI:
 
         if (self.max_workers_prompt):
             Config.MAX_WORKERS = int(self.max_workers_prompt)
+
+    def get_per_workers(self):
+        while not self.REQUIRED_PER_WORKERS_EVENT.is_set():
+            utils.clear_screen()
+            self._print_banner()
+            self.summary_obj.render(self.get_summary_obj.get())
+
+            self.per_worker_prompt = self.inputs.input_get_per_workers()
+
+            if (not self.per_worker_prompt):
+                self.per_worker_prompt = Config.CONCURRENT_PER_WORKER
+                self.REQUIRED_PER_WORKERS_EVENT.set()
+            elif (
+                (not self.per_worker_prompt.isdigit()) 
+                or 
+                (int(self.per_worker_prompt) < 1)
+                ):
+                MsgDCR.FailureMessage('Please enter valid positive integer for per worker')
+                self._continue()
+                continue
+            else:
+                self.REQUIRED_PER_WORKERS_EVENT.set()
+
+        if (self.per_worker_prompt):
+            Config.CONCURRENT_PER_WORKER = int(self.per_worker_prompt)
