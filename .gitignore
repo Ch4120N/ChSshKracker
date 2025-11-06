@@ -17,6 +17,7 @@ data/
 log/
 tests/
 lib/
+bin/
 # Tests Files
 TODO.txt
 ips.txt
