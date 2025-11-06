@@ -476,6 +476,7 @@ class InteractiveUI:
                 continue
         
             elif (confirm in ['y', 'yes']):
+                self._clear_summary()
                 self._clear_events()
                 self._clear_defaults()
                 self._clear_file_paths()
