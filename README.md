@@ -2,34 +2,109 @@
 
 # ChSSHKracker
 
-## _**Advanced Multi-Threaded SSH Brute Force Tool with Honeypot Detection**_
+### _Advanced Multi-Threaded SSH Brute Force Tool with Honeypot Detection_
 
-[![Python](https://img.shields.io/badge/Python-3.7+-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/Version-1.0.0-orange.svg)](https://github.com/Ch4120N/ChSSHKracker)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)]()
-
-> **A powerful, high-performance SSH brute force tool written in Python with enhanced multi-layer worker architecture, advanced honeypot detection, real-time statistics, and comprehensive system reconnaissance capabilities.**
+![Language](https://img.shields.io/badge/Language-Python%203.7+-blue?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Platform-All-red?style=for-the-badge)
+![License](https://img.shields.io/badge/License-Apache%202.0-orange?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-1.0.0-green?style=for-the-badge)
 
 ---
 
+> **ChSSHKracker** is a powerful, high-performance SSH brute force tool written in Python with enhanced multi-layer worker architecture, advanced honeypot detection, real-time statistics, and comprehensive system reconnaissance capabilities.
+
 </div>
 
-## 📋 Table of Contents
+---
 
-- [✨ Features](#-features)
-- [🚀 Quick Start](#-quick-start)
-- [📦 Installation](#-installation)
-- [💻 Usage](#-usage)
-  - [Command Line Mode](#command-line-mode)
-  - [Interactive Mode](#interactive-mode)
-- [⚙️ Configuration](#️-configuration)
-- [🏗️ Project Structure](#️-project-structure)
-- [🔍 Advanced Features](#-advanced-features)
-- [📊 Output Files](#-output-files)
-- [⚠️ Disclaimer](#️-disclaimer)
-- [📄 License](#-license)
-- [👤 Programmer](#-Programmer)
+## 👨‍💻 Project Programmer
+
+> **Ch4120N** — [Ch4120N@Proton.me](mailto:Ch4120N@Proton.me)
+
+---
+
+## 🧠 Made For
+
+> Security researchers, penetration testers, and cybersecurity professionals who need powerful SSH brute force capabilities with advanced honeypot detection for authorized security testing.
+
+---
+
+## 🖼️ Screenshots / Preview
+
+<div align="center">
+
+|                             Main Interface                             |                             Interactive Mode                             |                         Statistics Display                         |
+| :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | :----------------------------------------------------------------: |
+| <img src="./images/screenshot1.png" alt="Main Interface" width="400"/> | <img src="./images/screenshot2.png" alt="Interactive Mode" width="400"/> | <img src="./images/screenshot3.png" alt="Statistics" width="400"/> |
+
+> 📸 _Screenshots coming soon. Add your screenshots to the `images/` directory._
+
+</div>
+
+---
+
+## ⚓ Requirements
+
+- **Python 3.7+**
+- **pip** (Python package manager)
+
+### 📦 Installing Dependencies
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+Or install manually:
+
+```bash
+python -m pip install cryptography==40.0.2 paramiko==2.11.0 colorama==0.4.6 prompt_toolkit==3.0.52
+```
+
+---
+
+## ⚙️ Installation Guide
+
+### Linux
+
+```bash
+sudo apt install python3 git -y
+git clone https://github.com/Ch4120N/ChSSHKracker.git
+chmod 755 -R ChSSHKracker
+cd ChSSHKracker
+python3 -m pip install -r requirements.txt
+python3 ChSshKracker.py --help
+```
+
+### Windows
+
+If you have Git installed:
+
+```cmd
+git clone https://github.com/Ch4120N/ChSSHKracker.git
+cd ChSSHKracker
+python -m pip install -r requirements.txt
+python ChSshKracker.py --help
+```
+
+Otherwise, [download the ZIP release](https://github.com/Ch4120N/ChSSHKracker/releases), extract it, and run it directly.
+
+### macOS
+
+```bash
+brew install python3 git
+git clone https://github.com/Ch4120N/ChSSHKracker.git
+cd ChSSHKracker
+python3 -m pip install -r requirements.txt
+python3 ChSshKracker.py --help
+```
+
+---
+
+## 💻 Supported Platforms
+
+- [x] **Linux** (All distributions)
+- [x] **Windows** (7, 8, 10, 11)
+- [x] **macOS** (All versions)
 
 ---
 
@@ -59,68 +134,17 @@
 
 ---
 
-## 🚀 Quick Start
+## 💻 Usage
+
+### Quick Start
 
 ```bash
-# Clone the repository
-git clone https://github.com/Ch4120N/ChSSHKracker.git
-cd ChSSHKracker
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run in interactive mode
+# Interactive mode (recommended for beginners)
 python ChSshKracker.py --interactive
 
-# Or use command line
+# Command line mode
 python ChSshKracker.py -I ips.txt -U users.txt -P passwords.txt
 ```
-
----
-
-## 📦 Installation
-
-### Prerequisites
-
-- Python 3.7 or higher
-- pip (Python package manager)
-
-### Step-by-Step Installation
-
-1. **Clone the repository:**
-
-   ```bash
-   git clone https://github.com/Ch4120N/ChSSHKracker.git
-   cd ChSSHKracker
-   ```
-
-2. **Install required dependencies:**
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-   Or install manually:
-
-   ```bash
-   pip install cryptography==40.0.2 paramiko==2.11.0 colorama==0.4.6 prompt_toolkit==3.0.52
-   ```
-
-3. **Verify installation:**
-   ```bash
-   python ChSshKracker.py --version
-   ```
-
-### Dependencies
-
-- `cryptography==40.0.2` - Cryptographic primitives
-- `paramiko==2.11.0` - SSH protocol implementation
-- `colorama==0.4.6` - Cross-platform colored terminal text
-- `prompt_toolkit==3.0.52` - Interactive command-line interface
-
----
-
-## 💻 Usage
 
 ### Command Line Mode
 
@@ -245,55 +269,6 @@ python ChSshKracker.py -I ips.txt -C combo.txt -w 25 --per-worker 25 -t 5
 
 ---
 
-## 🏗️ Project Structure
-
-```
-ChSSHKracker/
-│
-├── ChSshKracker.py           # Main entry point
-├── requirements.txt          # Python dependencies
-├── README.MD                 # This file
-│
-├── core/                     # Core functionality
-│   ├── config.py             # Configuration and constants
-│   ├── worker.py             # Multi-threaded worker implementation
-│   ├── ssh_client.py         # SSH connection handler
-│   ├── honeypot.py           # Honeypot detection engine
-│   ├── recon.py              # System reconnaissance
-│   ├── result_logger.py      # Result logging system
-│   ├── stats.py              # Statistics tracking
-│   ├── counter.py            # Progress counter
-│   └── models.py             # Data models
-│
-├── cli/                      # Command-line interface
-│   ├── parser.py             # Argument parser
-│   ├── interactive.py        # Interactive mode
-│   ├── formatter.py          # Help formatter
-│   └── path_completer.py     # Path autocompletion
-│
-├── ui/                       # User interface components
-│   ├── banner.py             # ASCII banners
-│   ├── table.py              # Table rendering
-│   ├── summary_render.py     # Summary display
-│   ├── sharp_box.py          # Box drawing utilities
-│   └── decorators.py         # Message decorators
-│
-├── utils/                    # Utility functions
-│   ├── file_manager.py       # File operations
-│   └── utility.py            # General utilities
-│
-├── data/                     # Data directory
-│   ├── COMBO.TXT             # Generated combo file
-│   ├── SSH-GOODS.TXT         # Successful connections
-│   ├── SSH-DETAILES.TXT      # Detailed connection info
-│   ├── HONEYPOTS.TXT         # Detected honeypots
-│   └── debug.log             # Debug logs
-│
-
-```
-
----
-
 ## 🔍 Advanced Features
 
 ### Honeypot Detection
@@ -362,6 +337,72 @@ All output files are saved in the `data/` directory:
 
 ---
 
+## 🏗️ Project Structure
+
+```
+ChSSHKracker/
+│
+├── ChSshKracker.py           # Main entry point
+├── requirements.txt          # Python dependencies
+├── README.MD                 # This file
+│
+├── core/                     # Core functionality
+│   ├── config.py             # Configuration and constants
+│   ├── worker.py             # Multi-threaded worker implementation
+│   ├── ssh_client.py         # SSH connection handler
+│   ├── honeypot.py           # Honeypot detection engine
+│   ├── recon.py              # System reconnaissance
+│   ├── result_logger.py      # Result logging system
+│   ├── stats.py              # Statistics tracking
+│   ├── counter.py            # Progress counter
+│   └── models.py             # Data models
+│
+├── cli/                      # Command-line interface
+│   ├── parser.py             # Argument parser
+│   ├── interactive.py        # Interactive mode
+│   ├── formatter.py          # Help formatter
+│   └── path_completer.py     # Path autocompletion
+│
+├── ui/                       # User interface components
+│   ├── banner.py             # ASCII banners
+│   ├── table.py              # Table rendering
+│   ├── summary_render.py     # Summary display
+│   ├── sharp_box.py          # Box drawing utilities
+│   └── decorators.py         # Message decorators
+│
+├── utils/                    # Utility functions
+│   ├── file_manager.py       # File operations
+│   └── utility.py            # General utilities
+│
+├── data/                     # Data directory
+│   ├── COMBO.TXT             # Generated combo file
+│   ├── SSH-GOODS.TXT         # Successful connections
+│   ├── SSH-DETAILES.TXT      # Detailed connection info
+│   ├── HONEYPOTS.TXT         # Detected honeypots
+│   └── debug.log             # Debug logs
+│
+└── images/                   # Screenshots directory
+    ├── screenshot1.png
+    ├── screenshot2.png
+    └── screenshot3.png
+```
+
+---
+
+## ❤️ Support the Project
+
+If you find this tool useful, consider donating:
+
+| Cryptocurrency | Address                                      |
+| :------------- | :------------------------------------------- |
+| **BTC**        | `bc1ql4syps7qpa3djqrxwht3g66tldyh4j7qsyjkq0` |
+| **ETH**        | `0xfddbd535a4ad28792cbebceee3d6982d774e6d13` |
+| **USDT**       | `3Cq6HRQsiwZFmPEQfG9eJkZE2QGChvf2VN`         |
+
+> 💖 Your support helps keep the project alive and improving!
+
+---
+
 ## ⚠️ Disclaimer
 
 **This tool is for educational and authorized security testing purposes only.**
@@ -372,6 +413,13 @@ All output files are saved in the `data/` directory:
 - ⚠️ **Use responsibly and in compliance with applicable laws**
 
 **By using this tool, you agree to use it only for legitimate security testing and educational purposes.**
+
+---
+
+## 🚨 Reporting Issues
+
+> If you encounter bugs, configuration issues, or unexpected behavior, please reach out:
+> 📩 **Ch4120N@Proton.me**
 
 ---
 
@@ -397,24 +445,15 @@ limitations under the License.
 
 ---
 
-## 👤 Programmer
-
-**Ch4120N**
-
-- GitHub: [@Ch4120N](https://github.com/Ch4120N)
-- Project: [ChSSHKracker](https://github.com/Ch4120N/ChSSHKracker)
-
----
-
 <div align="center">
 
-### ⭐ If you find this project useful, please consider giving it a star! ⭐
+"Powerful SSH brute force with advanced honeypot detection — one connection at a time."
 
-**Made with ❤️ by Ch4120N**
-
----
+**⭐ If you like this project, don't forget to give it a star!**
 
 [![GitHub stars](https://img.shields.io/github/stars/Ch4120N/ChSSHKracker.svg?style=social&label=Star)](https://github.com/Ch4120N/ChSSHKracker)
 [![GitHub forks](https://img.shields.io/github/forks/Ch4120N/ChSSHKracker.svg?style=social&label=Fork)](https://github.com/Ch4120N/ChSSHKracker)
+
+**Made with ❤️ by Ch4120N**
 
 </div>
