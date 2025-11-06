@@ -123,7 +123,7 @@ class GetSummary:
         if (Config.MAX_WORKERS == 25):
             max_workers = f'{max_workers} {Fore.LIGHTBLUE_EX}({Fore.LIGHTRED_EX}DEFAULT{Fore.LIGHTBLUE_EX}){Fore.RESET}'
         
-        return Fore.LIGHTWHITE_EX + max_workers
+        return ['MAX WORKERS', f'{Fore.LIGHTWHITE_EX}{max_workers}']
 
     def get_per_worker(self):
         per_worker = ''
