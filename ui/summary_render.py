@@ -135,4 +135,4 @@ class GetSummary:
         if (Config.CONCURRENT_PER_WORKER == 25):
             per_worker = f'{per_worker} {Fore.LIGHTBLUE_EX}({Fore.LIGHTRED_EX}DEFAULT{Fore.LIGHTBLUE_EX}){Fore.RESET}'
         
-        return Fore.LIGHTWHITE_EX + per_worker
+        return ['PER WORKER', f'{Fore.LIGHTWHITE_EX}{per_worker}']
