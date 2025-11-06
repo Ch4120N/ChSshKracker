@@ -28,6 +28,8 @@ from core.config import (
 from utils.file_manager import FileManager
 from ui.decorators import MsgDCR
 from ui.summary_render import SummaryRenderer, GetSummary
+from ui.banner import Banners
+from utils.utility import utility as utils
 from cli.parser import Parser
 from cli.interactive import InteractiveUI
 
@@ -40,7 +42,7 @@ def handle_SIGINT(frm, func):
 
 signal.signal(signal.SIGINT, handle_SIGINT)
 
-# sys.stderr = open(os.devnull, 'w')
+sys.stderr = open(os.devnull, 'w')
 
 class ChSSHKracker:
     def __init__(self) -> None:
@@ -133,8 +135,10 @@ class ChSSHKracker:
         else:
             MsgDCR.InfoMessage('Interactive mode has been detected!')
             self.interactive_obj.run()
-            sys.exit(2)
-            
+        
+        utils.clear_screen()
+        print(Banners.MainBanner())
+
         if not Config.USE_COMBO:
             try:
                 FileManager.create_combo_file(Config.USERNAME_FILE, Config.PASSWORD_FILE, Config.COMBO_FILE)
