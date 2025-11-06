@@ -64,6 +64,13 @@ class GetSummary:
         
         return self.summary
 
+    def get_ips(self):
+        if Config.IP_FILE:
+            return f"{Fore.LIGHTWHITE_EX}{Config.IP_FILE}"
+        else:
+            return ''
+    
+
     def get_timeout(self):
         timeout = ''
         if (Config.TIMEOUT < 10):
