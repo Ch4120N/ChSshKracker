@@ -36,6 +36,8 @@ Structured Data (JSON-LD):
 
 <div align="center">
 
+<img src="./images/Logo.png" alt="ChSSHKracker Logo" width="500"/>
+
 # ChSSHKracker
 
 ### _**Advanced Multi-Threaded SSH Brute Force Tool with Honeypot Detection**_
