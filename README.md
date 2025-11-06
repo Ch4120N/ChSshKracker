@@ -127,8 +127,8 @@ Structured Data (JSON-LD):
 
 <div align="center">
 
-|                                                                              Main Interface                                                                              |                                                                         Interactive Mode                                                                          |                                                                  Statistics Display                                                                   |
-| :----------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Main Interface | Interactive Mode | Statistics Display |
+| :---: | :---: | :---: |
 | <img src="./images/screenshot1.png" alt="ChSSHKracker Main Interface - SSH brute force tool with real-time statistics" width="400" title="ChSSHKracker Main Interface"/> | <img src="./images/screenshot2.png" alt="ChSSHKracker Interactive Mode - User-friendly SSH cracker interface" width="400" title="ChSSHKracker Interactive Mode"/> | <img src="./images/screenshot3.png" alt="ChSSHKracker Statistics Display - Real-time progress tracking" width="400" title="ChSSHKracker Statistics"/> |
 
 </div>
