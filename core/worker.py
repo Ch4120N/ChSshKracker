@@ -125,6 +125,8 @@ class Worker:
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.per_worker) as inner_pool:
             while True:
                 if _stop_event.is_set():
+                    for f in futures:
+                        f.cancel()
                     break
                 try:
                     task = self.task_q.get(timeout=0.2)
