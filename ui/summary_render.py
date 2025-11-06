@@ -53,33 +53,15 @@ class SummaryRenderer:
 class GetSummary:
     def __init__(self):
         self.summary = {}
+
+    def add_if_exists(self, key, value):
+        if value is not None and str(value).strip() != '':
+            self.summary[key] = value
     
     def get(self, summary: Optional[dict[str, str]] = None):
         if (summary is not None or summary):
             self.summary = summary
         
-        self.summary['IP LIST'] = Fore.LIGHTWHITE_EX + Config.IP_FILE if (
-            (Config.IP_FILE) 
-            or (Config.IP_FILE != '')
-            ) else Fore.LIGHTCYAN_EX + 'N/A'
-        
-        self.summary['USE COMBO LIST'] = Fore.LIGHTCYAN_EX + 'YES' if Config.USE_COMBO else Fore.LIGHTCYAN_EX + 'NO'
-        self.summary['COMBO LIST'] = Fore.LIGHTWHITE_EX + Config.COMBO_FILE if Config.USE_COMBO else Fore.LIGHTWHITE_EX + FILE_PATH.COMBO_FILE
-        self.summary['USERNAME LIST'] = Fore.LIGHTWHITE_EX + Config.USERNAME_FILE if (
-            (Config.USERNAME_FILE) 
-            or (Config.USERNAME_FILE != '')
-            ) else Fore.LIGHTCYAN_EX + 'N/A'
-        
-        self.summary['PASSWORD LIST'] = Config.PASSWORD_FILE if (
-            (Config.PASSWORD_FILE) 
-            or (Config.PASSWORD_FILE != '')
-            ) else Fore.LIGHTCYAN_EX + 'N/A'
-        
-
-        self.summary['TIMEOUT (SEC)'] = self.get_timeout()
-        self.summary['MAX WORKERS'] = self.get_max_workers()
-        self.summary['PER WORKER'] = self.get_per_worker()
-
         return self.summary
 
     def get_timeout(self):
