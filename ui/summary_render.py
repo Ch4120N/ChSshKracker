@@ -111,7 +111,7 @@ class GetSummary:
         if (Config.TIMEOUT == 5):
             timeout = f'{timeout} {Fore.LIGHTBLUE_EX}({Fore.LIGHTRED_EX}DEFAULT{Fore.LIGHTBLUE_EX}){Fore.RESET}'
         
-        return Fore.LIGHTWHITE_EX + timeout
+        return ['TIMEOUT (SEC)', f'{Fore.LIGHTWHITE_EX}{timeout}']
     
     def get_max_workers(self):
         max_workers = ''
