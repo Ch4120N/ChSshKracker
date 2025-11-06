@@ -66,6 +66,9 @@ class GetSummary:
         if value is not None and str(value).strip() != '':
             self.summary[key] = value
     
+    def clear_summary(self):
+        self.summary.clear()
+    
     def get(self, summary: Optional[dict[str, str]] = None):
         if (summary is not None or summary):
             self.summary = summary
