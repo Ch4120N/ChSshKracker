@@ -17,7 +17,6 @@ from colorama import Fore, init
 init(autoreset=True)
 
 from core.config import (
-    _stop_event,
     Config,
     FILE_PATH
 )
@@ -27,13 +26,6 @@ from utils.utility import utility as utils
 from ui.summary_render import SummaryRenderer, GetSummary
 from ui.decorators import MsgDCR
 from ui.banner import Banners
-
-
-def handle_SIGINT(frm, func):
-    print()
-    MsgDCR.FailureMessage('Program Interrupted By User!')
-    _stop_event.set()
-    os.kill(os.getpid(), signal.SIGTERM)
 
 
 class Inputs:
@@ -63,7 +55,8 @@ class Inputs:
                           style=self.build_input_styles(prompt_color)
                           ).strip()
         except (KeyboardInterrupt, EOFError):
-            handle_SIGINT(1, None)
+            MsgDCR.FailureMessage('Program Interrupted By User!')
+            os.kill(os.getpid(), signal.SIGTERM)
         except RuntimeError:
             return ''
 
