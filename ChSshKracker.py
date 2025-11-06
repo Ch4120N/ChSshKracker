@@ -33,7 +33,7 @@ from cli.parser import Parser
 from cli.interactive import InteractiveUI
 
 
-# sys.stderr = open(os.devnull, 'w')
+sys.stderr = open(os.devnull, 'w')
 
 class ChSSHKracker:
     def __init__(self) -> None:
