@@ -13,13 +13,14 @@ SCRIPT_DESCRIPTION = (
 
 ANSI_ESCAPE = re.compile(r'\x1b\[[0-9;]*m')
 
-_total_tasks: int = 0
-_stop_event = threading.Event()
-_success_map_lock = threading.Lock()
-_success_ip_port: set[str] = set()
 
-_start_time_monotonic: float = 0.0
 
+class Globals:
+    _total_tasks: int = 0
+    _stop_event = threading.Event()
+    _success_map_lock = threading.Lock()
+    _success_ip_port: set[str] = set()
+    _start_time_monotonic: float = 0.0
 
 class Config:
     IP_FILE: str = ''
