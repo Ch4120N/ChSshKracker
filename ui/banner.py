@@ -9,10 +9,9 @@ init(autoreset=True)
 
 from core.stats import Stats, _stats_lock
 from core.config import (
-    _stop_event, 
-    _start_time_monotonic,
     __version__,
-    Config
+    Config,
+    Globals
 )
 
 from utils.utility import utility as utils
@@ -56,14 +55,14 @@ class BannerStats:
         self.per_worker = Config.CONCURRENT_PER_WORKER
 
     def run(self):
-        while not _stop_event.is_set():
+        while True:
             table = Table(self.theme, parent_padding=4)
             with _stats_lock:
                 goods = Stats.Goods.get()
                 errors = Stats.Errors.get()
                 honeypots = Stats.Honeypots.get()
             total_connections = goods + errors + honeypots
-            elapsed = max(0.001, time.perf_counter() - _start_time_monotonic)
+            elapsed = max(0.001, time.perf_counter() - Globals._start_time_monotonic)
             cps = total_connections / elapsed
             remaining = max(0.0, (self.total_tasks - total_connections) /
                 cps) if cps > 0 else 0.0
@@ -101,3 +100,7 @@ class BannerStats:
                             "Licence CGBL (Charon General Black Licence)"])
 
             print(table.display())
+
+            if total_connections == self.total_tasks:
+                Globals._stop_event.set()
+                break
