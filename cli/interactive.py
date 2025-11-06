@@ -241,7 +241,7 @@ class InteractiveUI:
             self._print_banner()
 
             ip_list = self.inputs.input_get_ip_file()
-            self.ip_path = os.path.realpath(ip_list)
+            self.ip_path = os.path.realpath(ip_list) # type: ignore
 
             if (not ip_list):
                 MsgDCR.FailureMessage("IP list is required!")
@@ -261,7 +261,8 @@ class InteractiveUI:
                 self.REQUIRED_IP_EVENT.set()
 
         Config.IP_FILE = self.ip_path
-
+        self.get_summary_obj.add_if_exists('IP LIST', Fore.LIGHTWHITE_EX + Config.IP_FILE if Config.IP_FILE else None)
+    
     def get_combos_or_userpass(self):
         while not self.USE_COMBO_CONFIRMATION.is_set():
             utils.clear_screen()
@@ -277,13 +278,16 @@ class InteractiveUI:
         
             elif (use_combo in ['y', 'yes']):
                 Config.USE_COMBO = True
+                self.get_summary_obj.add_if_exists('USE COMBO LIST', Fore.LIGHTCYAN_EX + ('YES' if Config.USE_COMBO else 'NO'))
                 self.get_combo_file()
                 self.USE_COMBO_CONFIRMATION.set()
             
             elif (use_combo in ['n', 'no']):
                 Config.USE_COMBO = False
                 Config.COMBO_FILE = FILE_PATH.COMBO_FILE
-
+                self.get_summary_obj.add_if_exists('USE COMBO LIST', Fore.LIGHTCYAN_EX + ('YES' if Config.USE_COMBO else 'NO'))
+                self.get_summary_obj.add_if_exists('COMBO LIST', 
+                                                   Fore.LIGHTWHITE_EX + (Config.COMBO_FILE))
                 self.get_user_file()
                 self.get_pass_file()
                 self.USE_COMBO_CONFIRMATION.set()
@@ -319,6 +323,8 @@ class InteractiveUI:
                 self.REQUIRED_COMBO_FILE_EVENT.set()
 
         Config.COMBO_FILE = self.combo_path
+        self.get_summary_obj.add_if_exists('COMBO LIST', 
+                                           Fore.LIGHTWHITE_EX + (Config.COMBO_FILE if Config.USE_COMBO else FILE_PATH.COMBO_FILE))
     
     def get_user_file(self):
         while not self.REQUIRED_USER_FILE_EVENT.is_set():
@@ -346,7 +352,8 @@ class InteractiveUI:
                 self.REQUIRED_USER_FILE_EVENT.set()
 
         Config.USERNAME_FILE = self.user_path
-
+        self.get_summary_obj.add_if_exists('USERNAME LIST', 
+                                           Fore.LIGHTWHITE_EX + Config.USERNAME_FILE if Config.USERNAME_FILE else None)
 
     def get_pass_file(self):
         while not self.REQUIRED_PASS_FILE_EVENT.is_set():
@@ -374,6 +381,8 @@ class InteractiveUI:
                 self.REQUIRED_PASS_FILE_EVENT.set()
 
         Config.PASSWORD_FILE = self.pass_path
+        self.get_summary_obj.add_if_exists('PASSWORD LIST', 
+                      Fore.LIGHTWHITE_EX + Config.PASSWORD_FILE if Config.PASSWORD_FILE else None)
     
     def get_timeout(self):
         while not self.REQUIRED_TIMEOUT_EVENT.is_set():
