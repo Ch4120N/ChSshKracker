@@ -430,6 +430,7 @@ class InteractiveUI:
 
         if (self.max_workers_prompt):
             Config.MAX_WORKERS = int(self.max_workers_prompt)
+            self.get_summary_obj.add_if_exists(self.get_summary_obj.get_max_workers())
 
     def get_per_workers(self):
         while not self.REQUIRED_PER_WORKERS_EVENT.is_set():
