@@ -151,6 +151,8 @@ class Worker:
                 yield SSHTask(ip=ip, port=port, username=u, password=p)
     
     def process_task(self, task: SSHTask) -> None:
+        if _stop_event.is_set():
+            return
         """Process a single SSH task with safe logging and stats updates."""
         t0 = time.perf_counter()
 
