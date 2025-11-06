@@ -76,6 +76,12 @@ class GetSummary:
         else:
             return f'{Fore.LIGHTCYAN_EX}NO'
     
+    def get_combo_file(self):
+        if Config.USE_COMBO:
+            return f"{Fore.LIGHTWHITE_EX}{Config.COMBO_FILE}"
+        else:
+            return f"{Fore.LIGHTWHITE_EX}{FILE_PATH.COMBO_FILE}"
+    
     def get_timeout(self):
         timeout = ''
         if (Config.TIMEOUT < 10):
