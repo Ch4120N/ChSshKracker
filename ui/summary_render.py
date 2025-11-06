@@ -82,6 +82,12 @@ class GetSummary:
         else:
             return f"{Fore.LIGHTWHITE_EX}{FILE_PATH.COMBO_FILE}"
     
+    def get_user_file(self):
+        if Config.USERNAME_FILE:
+            return f'{Fore.LIGHTWHITE_EX}{Config.USERNAME_FILE}'
+        else:
+            return ''
+    
     def get_timeout(self):
         timeout = ''
         if (Config.TIMEOUT < 10):
