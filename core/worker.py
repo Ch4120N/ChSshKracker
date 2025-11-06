@@ -88,7 +88,7 @@ class Worker:
         banner_thread.start()
 
         if _stop_event.is_set():
-            MsgDCR.FailureMessage("Execution stopped before start.")
+            MsgDCR.FailureMessage("Execution stopped by user before start.")
             return
 
         # Producer fills queue with SSHTask instances
