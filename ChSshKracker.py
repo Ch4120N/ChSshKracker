@@ -137,7 +137,7 @@ class ChSSHKracker:
             self.interactive_obj.run()
         
         utils.clear_screen()
-        print(Banners.MainBanner())
+        print(Fore.LIGHTRED_EX + Banners.MainBanner() + Fore.RESET, '\n')
 
         if not Config.USE_COMBO:
             try:
