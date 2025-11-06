@@ -456,6 +456,7 @@ class InteractiveUI:
 
         if (self.per_worker_prompt):
             Config.CONCURRENT_PER_WORKER = int(self.per_worker_prompt)
+            self.get_summary_obj.add_if_exists(self.get_summary_obj.get_per_worker())
     
     def get_confirm_configuration(self):
         self.CONFIRM_CONFIGURATION.clear()
