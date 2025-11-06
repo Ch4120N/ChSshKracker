@@ -2,13 +2,14 @@
 # ui/summary_render.py
 
 import shutil
-from typing import Optional
+import sys
+from typing import Optional, List
 
 from colorama import Fore, init
 init(autoreset=True)
 
 from core.config import Config, FILE_PATH
-
+from ui.decorators import MsgDCR
 
 class SummaryRenderer:
     def __init__(self, title: str = 'Configuration Summary', space: int = 5, global_margin_left_spaces: int = 2, text_margin_left: int = 2, max_width: int = 80) -> None:
@@ -54,7 +55,14 @@ class GetSummary:
     def __init__(self):
         self.summary = {}
 
-    def add_if_exists(self, key, value):
+    def add_if_exists(self, kv: List[str]):
+        if len(kv) > 2 or len(kv) < 2:
+            MsgDCR.FailureMessage('Invalid parameter for summaryes')
+            sys.exit(2)
+
+        key = kv[0]
+        value = kv[1]
+
         if value is not None and str(value).strip() != '':
             self.summary[key] = value
     
@@ -66,33 +74,33 @@ class GetSummary:
 
     def get_ips(self):
         if Config.IP_FILE:
-            return f"{Fore.LIGHTWHITE_EX}{Config.IP_FILE}"
+            return ['IP LIST', f"{Fore.LIGHTWHITE_EX}{Config.IP_FILE}"]
         else:
-            return ''
+            return ['IP LIST', '']
     
     def confirm_use_combo(self):
         if Config.USE_COMBO:
-            return f'{Fore.LIGHTCYAN_EX}YES'
+            return ['USE COMBO LIST', f'{Fore.LIGHTCYAN_EX}YES']
         else:
-            return f'{Fore.LIGHTCYAN_EX}NO'
+            return ['USE COMBO LIST', f'{Fore.LIGHTCYAN_EX}NO']
     
     def get_combo_file(self):
         if Config.USE_COMBO:
-            return f"{Fore.LIGHTWHITE_EX}{Config.COMBO_FILE}"
+            return ['COMBO LIST', f"{Fore.LIGHTWHITE_EX}{Config.COMBO_FILE}"]
         else:
-            return f"{Fore.LIGHTWHITE_EX}{FILE_PATH.COMBO_FILE}"
+            return ['COMBO LIST', f"{Fore.LIGHTWHITE_EX}{FILE_PATH.COMBO_FILE}"]
     
     def get_user_file(self):
         if Config.USERNAME_FILE:
-            return f'{Fore.LIGHTWHITE_EX}{Config.USERNAME_FILE}'
+            return ['USERNAME LIST', f'{Fore.LIGHTWHITE_EX}{Config.USERNAME_FILE}']
         else:
-            return ''
+            return ['USERNAME LIST', '']
     
     def get_pass_file(self):
         if Config.PASSWORD_FILE:
-            return f'{Fore.LIGHTWHITE_EX}{Config.PASSWORD_FILE}'
+            return ['PASSWORD LIST', f'{Fore.LIGHTWHITE_EX}{Config.PASSWORD_FILE}']
         else:
-            return ''
+            return ['PASSWORD LIST', '']
     
     def get_timeout(self):
         timeout = ''
