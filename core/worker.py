@@ -16,10 +16,7 @@ from ui.table import Table
 from core.config import (
     Config,
     FILE_PATH,
-    _start_time_monotonic,
-    _stop_event,
-    _success_ip_port,
-    _success_map_lock
+    Globals
 )
 from core.stats import Stats, _stats_lock
 from core.recon import ReconSystem
@@ -70,7 +67,6 @@ class Worker:
     
 
     def run(self) -> None:
-        global _start_time_monotonic
         if not self.total_tasks:
             try:
                 self.total_tasks = len(self.combos) * len(self.targets)
@@ -81,15 +77,11 @@ class Worker:
             MsgDCR.FailureMessage("No tasks to run. Check your files.")
             return
         
-        _start_time_monotonic = time.perf_counter()
+        Globals._start_time_monotonic = time.perf_counter()
 
         banner_task = BannerStats(self.total_tasks)
         banner_thread = threading.Thread(target=banner_task.run, daemon=True)
         banner_thread.start()
-
-        if _stop_event.is_set():
-            MsgDCR.FailureMessage("Execution stopped by user before start.")
-            return
 
         # Producer fills queue with SSHTask instances
         prod_thread = threading.Thread(target=self.producer, daemon=True)
@@ -103,13 +95,13 @@ class Worker:
         
 
         # Signal banner to stop and give it a moment to exit
-        _stop_event.set()
+        Globals._stop_event.set()
         banner_thread.join(timeout=1.0)
 
     def producer(self) -> None:
         try:
             for task in self.generate_tasks(self.combos, self.targets):
-                if _stop_event.is_set():
+                if Globals._stop_event.is_set():
                     break
                 self.task_q.put(task)
         finally:
@@ -124,9 +116,7 @@ class Worker:
         futures: List[concurrent.futures.Future[None]] = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.per_worker) as inner_pool:
             while True:
-                if _stop_event.is_set():
-                    for f in futures:
-                        f.cancel()
+                if Globals._stop_event.is_set():
                     break
                 try:
                     task = self.task_q.get(timeout=0.2)
@@ -151,8 +141,6 @@ class Worker:
                 yield SSHTask(ip=ip, port=port, username=u, password=p)
     
     def process_task(self, task: SSHTask) -> None:
-        if _stop_event.is_set():
-            return
         """Process a single SSH task with safe logging and stats updates."""
         t0 = time.perf_counter()
 
