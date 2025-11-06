@@ -70,6 +70,7 @@ class Worker:
     
 
     def run(self) -> None:
+        global _start_time_monotonic
         if not self.total_tasks:
             try:
                 self.total_tasks = len(self.combos) * len(self.targets)
