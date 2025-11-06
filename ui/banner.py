@@ -96,8 +96,7 @@ class BannerStats:
                 )
             ])
             table.add_block(['Powered By Ch4120N',
-                            f"Enhanced Multi-Layer Workers v{self.version}",
-                            "Licence CGBL (Charon General Black Licence)"])
+                            f"Enhanced Multi-Layer Workers v{self.version}"])
 
             print(table.display())
 
