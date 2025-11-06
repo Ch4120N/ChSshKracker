@@ -1,8 +1,44 @@
+<!--
+SEO Meta Tags
+Title: ChSSHKracker - Advanced SSH Brute Force Tool with Honeypot Detection
+Description: Powerful Python SSH brute force tool with multi-threaded architecture, advanced honeypot detection, real-time statistics, and system reconnaissance. Perfect for authorized security testing and penetration testing.
+Keywords: SSH brute force, SSH cracker, penetration testing, security testing, honeypot detection, Python security tool, SSH scanner, network security, cybersecurity tool, paramiko SSH, multi-threaded SSH, security research
+Author: Ch4120N
+Language: en-US
+Robots: index, follow
+Open Graph:
+  og:title: ChSSHKracker - Advanced SSH Brute Force Tool
+  og:description: Powerful Python SSH brute force tool with honeypot detection for authorized security testing
+  og:type: software
+  og:url: https://github.com/Ch4120N/ChSSHKracker
+Twitter Card:
+  twitter:card: summary_large_image
+  twitter:title: ChSSHKracker - Advanced SSH Brute Force Tool
+  twitter:description: Powerful Python SSH brute force tool with honeypot detection
+Structured Data (JSON-LD):
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ChSSHKracker",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "Windows, Linux, macOS",
+  "programmingLanguage": "Python",
+  "author": {
+    "@type": "Person",
+    "name": "Ch4120N",
+    "email": "Ch4120N@Proton.me"
+  },
+  "description": "Advanced multi-threaded SSH brute force tool with honeypot detection",
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "version": "1.0.0"
+}
+-->
+
 <div align="center">
 
 # ChSSHKracker
 
-### _Advanced Multi-Threaded SSH Brute Force Tool with Honeypot Detection_
+### _**Advanced Multi-Threaded SSH Brute Force Tool with Honeypot Detection**_
 
 ![Language](https://img.shields.io/badge/Language-Python%203.7+-blue?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/Platform-All-red?style=for-the-badge)
@@ -11,9 +47,51 @@
 
 ---
 
-> **ChSSHKracker** is a powerful, high-performance SSH brute force tool written in Python with enhanced multi-layer worker architecture, advanced honeypot detection, real-time statistics, and comprehensive system reconnaissance capabilities.
+> **ChSSHKracker** is a powerful, high-performance SSH brute force tool written in Python with enhanced multi-layer worker architecture, advanced honeypot detection, real-time statistics, and comprehensive system reconnaissance capabilities. Perfect for **authorized security testing**, **penetration testing**, and **cybersecurity research**.
 
 </div>
+
+---
+
+## 📋 Table of Contents
+
+- 👨‍💻 [Project Programmer](#-project-programmer)
+- 🧠 [Made For](#-made-for)
+- 🔑 [Keywords & Use Cases](#-keywords--use-cases)
+- 🖼️ [Screenshots / Preview](#️-screenshots--preview)
+- ⚓ [Requirements](#-requirements)
+  - 📦 [Installing Dependencies](#-installing-dependencies)
+- ⚙️ [Installation Guide](#️-installation-guide)
+  - [Linux](#linux)
+  - [Windows](#windows)
+  - [macOS](#macos)
+- 💻 [Supported Platforms](#-supported-platforms)
+- ✨ [Features](#-features)
+  - 🎯 [Core Capabilities](#-core-capabilities)
+  - 🛡️ [Security Features](#️-security-features)
+  - 🎮 [User Experience](#-user-experience)
+- 💻 [Usage](#-usage)
+  - [Quick Start](#quick-start)
+  - [Command Line Mode](#command-line-mode)
+    - [Basic Usage](#basic-usage)
+    - [Command Line Arguments](#command-line-arguments)
+    - [Input File Formats](#input-file-formats)
+  - [Interactive Mode](#interactive-mode)
+- ⚙️ [Configuration](#️-configuration)
+  - [Default Settings](#default-settings)
+  - [Performance Tuning](#performance-tuning)
+- 🔍 [Advanced Features](#-advanced-features)
+  - [Honeypot Detection](#honeypot-detection)
+  - [System Reconnaissance](#system-reconnaissance)
+  - [Real-Time Statistics](#real-time-statistics)
+- 📊 [Output Files](#-output-files)
+  - [Output Format Example](#output-format-example)
+- 🏗️ [Project Structure](#️-project-structure)
+- ❤️ [Support the Project](#️-support-the-project)
+- ⚠️ [Disclaimer](#️-disclaimer)
+- 🚨 [Reporting Issues](#-reporting-issues)
+- ❓ [Frequently Asked Questions (FAQ)](#-frequently-asked-questions-faq)
+- 📄 [License](#-license)
 
 ---
 
@@ -25,7 +103,21 @@
 
 ## 🧠 Made For
 
-> Security researchers, penetration testers, and cybersecurity professionals who need powerful SSH brute force capabilities with advanced honeypot detection for authorized security testing.
+> **Security researchers**, **penetration testers**, and **cybersecurity professionals** who need powerful **SSH brute force** capabilities with **advanced honeypot detection** for **authorized security testing**, **penetration testing**, and **network security assessment**.
+
+---
+
+## 🔑 Keywords & Use Cases
+
+**Primary Keywords:** SSH brute force, SSH cracker, SSH scanner, penetration testing tool, security testing, honeypot detection, Python security tool, network security, cybersecurity tool, paramiko SSH, multi-threaded SSH, SSH password cracker
+
+**Use Cases:**
+
+- ✅ **Authorized Penetration Testing**: Test SSH security on systems you own or have permission to test
+- ✅ **Security Research**: Study SSH authentication mechanisms and honeypot detection
+- ✅ **Network Security Assessment**: Identify weak SSH credentials in authorized environments
+- ✅ **Educational Purposes**: Learn about SSH security, brute force attacks, and defense mechanisms
+- ✅ **Red Team Exercises**: Simulate SSH attacks in controlled security testing environments
 
 ---
 
@@ -33,11 +125,9 @@
 
 <div align="center">
 
-|                             Main Interface                             |                             Interactive Mode                             |                         Statistics Display                         |
-| :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | :----------------------------------------------------------------: |
-| <img src="./images/screenshot1.png" alt="Main Interface" width="400"/> | <img src="./images/screenshot2.png" alt="Interactive Mode" width="400"/> | <img src="./images/screenshot3.png" alt="Statistics" width="400"/> |
-
-> 📸 _Screenshots coming soon. Add your screenshots to the `images/` directory._
+|                                                                              Main Interface                                                                              |                                                                         Interactive Mode                                                                          |                                                                  Statistics Display                                                                   |
+| :----------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------: |
+| <img src="./images/screenshot1.png" alt="ChSSHKracker Main Interface - SSH brute force tool with real-time statistics" width="400" title="ChSSHKracker Main Interface"/> | <img src="./images/screenshot2.png" alt="ChSSHKracker Interactive Mode - User-friendly SSH cracker interface" width="400" title="ChSSHKracker Interactive Mode"/> | <img src="./images/screenshot3.png" alt="ChSSHKracker Statistics Display - Real-time progress tracking" width="400" title="ChSSHKracker Statistics"/> |
 
 </div>
 
@@ -129,7 +219,6 @@ python3 ChSshKracker.py --help
 
 - **💬 Interactive Mode**: User-friendly interactive prompts for easy configuration
 - **📁 Flexible Input**: Support for combo files or separate username/password lists
-- **🌐 CIDR Support**: Process IP ranges and CIDR notation
 - **📈 Progress Tracking**: Real-time progress bars and statistics display
 
 ---
@@ -420,6 +509,43 @@ If you find this tool useful, consider donating:
 
 > If you encounter bugs, configuration issues, or unexpected behavior, please reach out:
 > 📩 **Ch4120N@Proton.me**
+
+---
+
+## ❓ Frequently Asked Questions (FAQ)
+
+### What is ChSSHKracker?
+
+ChSSHKracker is an **advanced SSH brute force tool** written in Python that combines **multi-threaded architecture** with **honeypot detection** capabilities. It's designed for **authorized security testing** and **penetration testing** purposes.
+
+### Is this tool legal?
+
+Yes, when used for **authorized security testing** on systems you own or have explicit written permission to test. Unauthorized access to computer systems is illegal. Always ensure you have proper authorization before using this tool.
+
+### How does honeypot detection work?
+
+ChSSHKracker uses a **multi-layer detection system** that analyzes command outputs, response times, file systems, processes, network configurations, and behavioral patterns to identify honeypot traps.
+
+### What Python version is required?
+
+**Python 3.7 or higher** is required. The tool uses modern Python features and libraries like `paramiko`, `colorama`, and `prompt_toolkit`.
+
+### Can I use this on Windows?
+
+Yes! ChSSHKracker is **cross-platform** and works on **Windows**, **Linux**, and **macOS**. See the [Installation Guide](#️-installation-guide) for platform-specific instructions.
+
+### How do I report bugs or request features?
+
+Contact the developer at **Ch4120N@Proton.me** or open an issue on the GitHub repository.
+
+### Is there a GUI version?
+
+Currently, ChSSHKracker is a **command-line tool** with an **interactive mode** for easier configuration. A GUI version may be considered for future releases.
+
+### What makes ChSSHKracker different from other SSH brute force tools?
+
+ChSSHKracker stands out with its **advanced honeypot detection system**, **real-time statistics**, **beautiful terminal UI**, **interactive mode**, and **comprehensive system reconnaissance** capabilities. It's specifically designed for **authorized security testing** with built-in safety features.
+
 
 ---
 
