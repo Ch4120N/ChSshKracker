@@ -87,6 +87,10 @@ class Worker:
         banner_thread = threading.Thread(target=banner_task.run, daemon=True)
         banner_thread.start()
 
+        if _stop_event.is_set():
+            MsgDCR.FailureMessage("Execution stopped before start.")
+            return
+
         # Producer fills queue with SSHTask instances
         prod_thread = threading.Thread(target=self.producer, daemon=True)
         prod_thread.start()
