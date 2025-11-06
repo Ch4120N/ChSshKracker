@@ -21,8 +21,7 @@ from core.worker import Worker
 from core.config import (
     Config,
     FILE_PATH,
-    _total_tasks,
-    _stop_event
+    Globals
 )
 
 from utils.file_manager import FileManager
@@ -34,15 +33,7 @@ from cli.parser import Parser
 from cli.interactive import InteractiveUI
 
 
-def handle_SIGINT(frm, func):
-    print()
-    MsgDCR.FailureMessage('Program Interrupted By User!')
-    _stop_event.set()
-    os.kill(os.getpid(), signal.SIGTERM)
-
-signal.signal(signal.SIGINT, handle_SIGINT)
-
-sys.stderr = open(os.devnull, 'w')
+# sys.stderr = open(os.devnull, 'w')
 
 class ChSSHKracker:
     def __init__(self) -> None:
@@ -54,6 +45,12 @@ class ChSSHKracker:
         )
         self.parser_obj = Parser()
         self.interactive_obj = InteractiveUI()
+        signal.signal(signal.SIGINT, self.handle_SIGINT)
+    
+    def handle_SIGINT(self, frm, func):
+        Globals._stop_event.set()
+        MsgDCR.FailureMessage('Program Interrupted By User!')
+        os._exit(1)
 
     def run(self):
         args = self.parser_obj.build_parser()
