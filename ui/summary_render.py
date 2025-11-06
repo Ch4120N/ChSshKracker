@@ -88,6 +88,12 @@ class GetSummary:
         else:
             return ''
     
+    def get_pass_file(self):
+        if Config.PASSWORD_FILE:
+            return f'{Fore.LIGHTWHITE_EX}{Config.PASSWORD_FILE}'
+        else:
+            return ''
+    
     def get_timeout(self):
         timeout = ''
         if (Config.TIMEOUT < 10):
