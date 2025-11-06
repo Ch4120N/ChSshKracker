@@ -70,7 +70,12 @@ class GetSummary:
         else:
             return ''
     
-
+    def confirm_use_combo(self):
+        if Config.USE_COMBO:
+            return f'{Fore.LIGHTCYAN_EX}YES'
+        else:
+            return f'{Fore.LIGHTCYAN_EX}NO'
+    
     def get_timeout(self):
         timeout = ''
         if (Config.TIMEOUT < 10):
