@@ -4,7 +4,7 @@
 import re
 import threading
 
-__version__ = '1.3.0'
+__version__ = '1.0.0'
 SCRIPT_NAME = 'ChSSHKracker'  # Script name
 SCRIPT_DESCRIPTION = (
     'A powerful, high-performance SSH brute force tool written in Python 3.9 with enhanced multi-layer worker architecture'
