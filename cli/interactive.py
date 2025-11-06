@@ -219,7 +219,10 @@ class InteractiveUI:
         Config.USERNAME_FILE = ''
         Config.PASSWORD_FILE = ''
         Config.COMBO_FILE = ''
-
+    
+    def _clear_summary(self):
+        self.get_summary_obj.clear_summary()
+    
     def _print_banner(self):
         print(Fore.LIGHTRED_EX + Banners.MainBanner(margin_left=2) + Fore.RESET, '\n')
 
