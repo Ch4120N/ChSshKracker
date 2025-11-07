@@ -298,14 +298,8 @@ class ChSSHKracker:
                 if ((not os.path.isfile(combo_list)) or (not os.path.exists(combo_list))):
                     MsgDCR.FailureMessage(f'Combo list does not exist: {combo_list}')
                     sys.exit(2)
-                combo_list_path = os.path.realpath(combo_list)
-                try:
-                    self.parse_combos = FileManager.parse_combo(combo_list_path)
-                except Exception:
-                    MsgDCR.FailureMessage('Error on loading combo list')
-                    sys.exit(2)
                 Config.USE_COMBO = True
-                Config.COMBO_FILE = combo_list_path
+                Config.COMBO_FILE = os.path.realpath(combo_list)
             
             else:
                 Config.USE_COMBO = False
@@ -365,6 +359,12 @@ class ChSSHKracker:
             except Exception:
                 MsgDCR.FailureMessage('Error on creating combo list')
                 sys.exit(1)
+        else:
+            try:
+                self.parse_combos = FileManager.parse_combo(Config.COMBO_FILE)
+            except Exception:
+                MsgDCR.FailureMessage('Error on loading combo list')
+                sys.exit(2)
         
         try:
             self.parse_target_ips = FileManager.parse_targets(Config.IP_FILE)
