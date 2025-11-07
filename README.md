@@ -36,7 +36,7 @@ Structured Data (JSON-LD):
 
 <div align="center">
 
-<img src="./images/Logo.png" alt="ChSSHKracker Logo" width="500"/>
+<img src="./images/Logo.png" alt="ChSSHKracker Logo" width="600"/>
 
 # ChSSHKracker
 
@@ -108,7 +108,7 @@ Structured Data (JSON-LD):
 
 ---
 
-## 🖼️ Screenshots / Preview
+## 🖼️ Screenshots
 
 <div align="center">
 
